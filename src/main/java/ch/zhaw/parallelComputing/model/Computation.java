@@ -3,6 +3,8 @@ package ch.zhaw.parallelComputing.model;
 import ch.zhaw.mapreduce.MapReduce;
 import ch.zhaw.mapreduce.MapReduceFactory;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Observable;
 
 /**
@@ -12,15 +14,14 @@ import java.util.Observable;
 public class Computation extends Observable{
 
 	private final MapReduce computer;
-	
 
-	public Computation(DateShuffleFactory residueProcessorFactory ) {
-		computer = MapReduceFactory.getMapReduce().newMRTask(new TweetMapper() , new DateAvgReducer(), null, residueProcessorFactory);
+
+	public Computation() {
+		computer = MapReduceFactory.getMapReduce().newMRTask(new TweetMapper() , new DateAvgReducer(), new DateAvgCombiner(), null);
 	}
 
-	private void start() {
-		Map<Restklasse, Liste<Permutationen>> mit Permutationen, für die der Satz nicht gilt (Erwartungswert: Keine)
-		Map<String, List<String>> results = computer.runMapReduceTask(new FileIterator(residue, permoffset));
+	public void start(String filename, int offset) {
+		Map<String, List<String>> results = computer.runMapReduceTask(new FileIterator(filename, new Long(offset)));
 		
 	    super.setChanged(); 
 

@@ -31,13 +31,13 @@ public class ConsoleObserver implements Observer {
 	private final ConsoleOutput outConsole;
 	private Date startTSD;
 
-	public ConsoleObserver(File outDirectory ) {
+	public ConsoleObserver(String out ) {
 		startTSD = new Date();
 
-		outFile = new File(outDirectory, "log.txt");
+		outFile = new File(out);
 		outConsole = new ConsoleOutput();
 
-		printStreams("Seminararbeit Paralleles Rechnen - ZHAW FS 2014 - Max Schrimpf");
+		printStreams("Seminar Parallel Computing - ZHAW FS 2014 - Max Schrimpf");
 		redirectSystemStreams();
 	}
 
@@ -59,14 +59,10 @@ public class ConsoleObserver implements Observer {
 		long diffMinutes = difference / (60 * 1000) % 60;
 		long diffHours = difference / (60 * 60 * 1000) % 24;
 
-		// sofort wieder Messung starten
 		startTSD = new Date();
-		printStreams("Benötigte Zeit ~ " + diffHours + ":" + diffMinutes + "." + diffSeconds);
+		printStreams("Elapsed time ~ " + diffHours + ":" + diffMinutes + "." + diffSeconds);
 	}
 
-	/**
-	 * Leitet die Standard Nachrichten Streams auf dieses Fenster um.
-	 */
 	private void redirectSystemStreams() {
 		OutputStream out = new OutputStream() {
 			@Override

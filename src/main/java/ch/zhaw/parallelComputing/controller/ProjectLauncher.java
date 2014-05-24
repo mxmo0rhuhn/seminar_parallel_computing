@@ -21,55 +21,36 @@ public class ProjectLauncher {
 	
 	private static final Logger LOG = Logger.getLogger(ProjectLauncher.class.getName());
 
-	/**
-	 * Startet die Applikation und ruft die benötigten Aufgaben
-	 * 
-	 * @param args
-	 *            Wenn ein Parameter übergeben wird, ein fix definierter Stop-Wert. Wenn zwei
-	 *            Parameter übergeben werden: Erster Wert fix definierter Stop-Wert, zweiter Wert
-	 *            fest definierter Start-Wert.
-	 */
 	public static void main(String[] args) {
 		new ProjectLauncher();
 	}
 
 	public ProjectLauncher() {
 
-		// Pfad, an dem die Output Files gespeichert werden
-		String path = System.getProperty("java.io.tmpdir");
-		File outDirectory = null;
+        // Input file
+        String path = "raw.csv";
+        // Number of tweets per MAP task
+        int offset = 10;
+        String logfile = "log.txt";
 
 		Properties prop = new Properties();
 		try {
 			prop.load(new FileInputStream("parallelComputing.properties"));
 
 			path = prop.getProperty("path");
+            logfile = prop.getProperty("logfile");
+            offset = Integer.parseInt(prop.getProperty("offset"));
 		} catch (IOException e) {
-			// konnten nicht geladen werden - weiter mit oben definierten defaults
+			// Properties could not be load - proceed with defaults
 		}
 		
-		LOG.log(Level.INFO, "Computation Config: Path={0} ", new Object[]{path });
-
-		try {
-			outDirectory = new File(path);
-			if (!outDirectory.exists()) {
-				if (!outDirectory.mkdirs()) {
-					throw new IllegalArgumentException(outDirectory
-							+ " does not exist and is not writable.");
-				}
-			} else if (!outDirectory.isDirectory()) {
-				throw new IllegalArgumentException(outDirectory + " exists but is not a directory");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.exit(-1);
-		}
+		LOG.log(Level.INFO, "Computation Config: Path={0} Offset={1} Logfile={3}", new Object[]{path, offset, logfile});
 
 		MapReduceFactory.getMapReduce().start();
 
-		Computation validator = new Computation(new DateShuffleFactory(outDirectory));
-		validator.addObserver(new ConsoleObserver(outDirectory));
-
+		Computation validator = new Computation();
+		validator.addObserver(new ConsoleObserver(logfile));
+        validator.start(path, offset);
 
 		MapReduceFactory.getMapReduce().stop();
 		System.exit(0);

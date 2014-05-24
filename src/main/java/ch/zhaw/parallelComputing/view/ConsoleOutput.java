@@ -13,7 +13,7 @@ import javax.swing.WindowConstants;
 
 
 /**
- * Diese Klasse stellt eine Ausgabe in einem eigenen Fenster dar. 
+ * Displays the console in a own window
  * 
  * @author Max Schrimpf
  */
@@ -24,7 +24,7 @@ public class ConsoleOutput extends JFrame {
 	private final JPanel panel;
 
 	/**
-	 * Erstellt ein neues Konsolen-Fenster, welches ab sofort die Konsolenausgabe darstellt.
+	 * Creates a new window for console logging.
 	 */
 	public ConsoleOutput() {
 		this.textArea = new JTextArea();
@@ -46,10 +46,10 @@ public class ConsoleOutput extends JFrame {
 	}
 
 	/**
-	 * Schreibt Text in die Text Area des Frames.
+	 * Displays some text upon the virtual console
 	 * 
 	 * @param text
-	 *            Der Text der geschrieben werden soll.
+	 *            The text to display
 	 */
 	public void println(final String text) {
 		SwingUtilities.invokeLater(new Runnable() {
