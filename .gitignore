@@ -23,3 +23,5 @@
 # Maven
 target/**
 
+# Documentation 
+doc

@@ -1,8 +1,5 @@
-import java.io.*;
-import java.nio.charset.Charset;
-import java.util.Properties;
-
-import com.sun.rmi.rmid.ExecPermission;
+import au.com.bytecode.opencsv.CSVReader;
+import au.com.bytecode.opencsv.CSVWriter;
 import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
@@ -10,6 +7,10 @@ import edu.stanford.nlp.rnn.RNNCoreAnnotations;
 import edu.stanford.nlp.sentiment.SentimentCoreAnnotations;
 import edu.stanford.nlp.trees.Tree;
 import edu.stanford.nlp.util.CoreMap;
+
+import java.io.*;
+import java.nio.charset.Charset;
+import java.util.Properties;
 /*
 import static org.apache.uima.fit.factory.AnalysisEngineFactory.*;
 import static org.apache.uima.fit.factory.CollectionReaderFactory.*;
@@ -26,40 +27,37 @@ import de.tudarmstadt.ukp.dkpro.core.tokit.BreakIteratorSegmenter;
 
 public class CoreNLPTest {
 
-    private static final String PATH = "text.txt";
+    private static final String IN_PATH = "raw.csv";
+    private static final String OUT_PATH = "Sentients.csv";
+    private static final int ID_INDEX = 1;
+    private static final int TWEET_INDEX = 1;
+    private static final int TSD_INDEX = 1;
 
     public static void main(String[] args) throws Exception {
-        FileInputStream fis = new FileInputStream(PATH);
-        BufferedReader br = new BufferedReader(new InputStreamReader(fis, Charset.forName("UTF-8")));
-        String line;
-        while ((line = br.readLine()) != null) {
-            findSentiment(line);
+        new CoreNLPTest().parseCSV();
+    }
+
+    public void parseCSV() throws Exception {
+        CSVWriter writer = new CSVWriter(new FileWriter(OUT_PATH));
+        CSVReader reader = new CSVReader(new FileReader(IN_PATH));
+
+        String[] entries = { "ID", "TSD", "Tweet", "Sentiment"};
+        writer.writeNext(entries);
+
+        // skip header
+        String [] nextLine = reader.readNext();
+        while ((nextLine = reader.readNext()) != null) {
+            entries[0] = nextLine[23];
+            entries[1] = nextLine[81];
+            entries[2] = nextLine[18];
+            entries[3] = findSentiment(nextLine[18]).toString();
+            writer.writeNext(entries);
         }
-        br.close();
+        reader.close();
+        writer.close();
     }
-/*
-        CollectionReaderDescription cr = createReaderDescription(
-                TextReader.class,
-                TextReader.PARAM_PATH, "src/test/resources/*.txt",
-                TextReader.PARAM_LANGUAGE, "en");
 
-        AnalysisEngineDescription seg = createEngineDescription(BreakIteratorSegmenter.class);
-
-        AnalysisEngineDescription tagger = createEngineDescription(OpenNlpPosTagger.class);
-
-        AnalysisEngineDescription cc = createEngineDescription(
-                CasDumpWriter.class,
-                CasDumpWriter.PARAM_OUTPUT_FILE, "target/output.txt");
-
-        runPipeline(cr, seg, tagger, cc);
-    }
-*/
-        public static void findSentiment(String line) throws Exception{
-
-            String newLine = System.getProperty("line.separator");
-        FileWriter fos = new FileWriter("output.txt", true);
-            BufferedWriter bw = new BufferedWriter(fos);
-
+    private Integer findSentiment(String line) throws Exception {
 
         Properties props = new Properties();
         props.setProperty("annotators", "tokenize, ssplit, parse, sentiment");
@@ -78,7 +76,6 @@ public class CoreNLPTest {
                 }
             }
         }
-            bw.write("line: '" + line + "' sentiment: " + mainSentiment + newLine);
-            bw.close();
+        return mainSentiment;
     }
 }
