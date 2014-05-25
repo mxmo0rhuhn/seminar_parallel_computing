@@ -20,6 +20,7 @@ public class FileIterator implements Iterator<String> {
     private boolean hasNext;
 
 	public FileIterator(String filename, Long offset) {
+        hasNext = true;
         BufferedReader tmp = null;
 		this.offset = offset;
         try {
@@ -58,12 +59,13 @@ public class FileIterator implements Iterator<String> {
 
 	@Override
 	public String next() {
-        StringBuffer toReturn = null;
+        StringBuffer toReturn = new StringBuffer();
 		if (hasNext()) {
             for (Long i = 0L ; i<offset; i++) {
                 toReturn.append(testAndGetLine());
             }
 		}
+
         return toReturn.toString();
 	}
 

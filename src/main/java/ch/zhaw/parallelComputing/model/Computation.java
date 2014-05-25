@@ -22,9 +22,12 @@ public class Computation extends Observable{
 
 	public void start(String filename, int offset) {
 		Map<String, List<String>> results = computer.runMapReduceTask(new FileIterator(filename, new Long(offset)));
-		
-	    super.setChanged(); 
 
+	    super.setChanged();
  	    super.notifyObservers(results);
+
+        for(String key : results.keySet()) {
+            System.out.println("Key = "+ key + " Value = " + results.get(key));
+        }
 	}
 }

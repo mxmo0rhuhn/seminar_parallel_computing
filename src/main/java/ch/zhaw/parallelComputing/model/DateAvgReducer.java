@@ -11,37 +11,15 @@ public class DateAvgReducer implements ReduceInstruction {
 
 	@Override
 	public void reduce(ReduceEmitter emitter, String key, Iterator<KeyValuePair> values) {
-        Average avg = new Average();
+        Double[] tmp = new Double[]{0.0,0.0};
 
         while(values.hasNext()) {
-            avg.add(Integer.parseInt(values.next().getValue()));
+            KeyValuePair pair = values.next();
+            tmp[0]++;
+            tmp[1] += Double.parseDouble(pair.getValue());
         }
 
-        emitter.emit(avg.getAvg());
-    }
-
-    private class Average {
-        int num;
-        int sum;
-
-        public  Average() {
-            num = 0;
-        }
-
-        public  Average(int init) {
-            num = 1;
-            sum = init;
-        }
-
-        public Average add(int i) {
-            num ++;
-            sum += i;
-            return this;
-        }
-
-        public String getAvg() {
-            return Integer.toString(sum/num);
-        }
+        emitter.emit("" + tmp[1]/tmp[0]);
     }
 }
 

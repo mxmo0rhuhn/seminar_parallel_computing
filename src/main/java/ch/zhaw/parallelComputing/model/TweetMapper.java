@@ -9,29 +9,35 @@ import au.com.bytecode.opencsv.CSVWriter;
 import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
-import edu.stanford.nlp.rnn.RNNCoreAnnotations;
+import edu.stanford.nlp.neural.rnn.RNNCoreAnnotations;
 import edu.stanford.nlp.sentiment.SentimentCoreAnnotations;
 import edu.stanford.nlp.trees.Tree;
 import edu.stanford.nlp.util.CoreMap;
 
 import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.nio.file.Path;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Properties;
 
 import java.util.logging.Logger;
 
 public class TweetMapper implements MapInstruction {
 
-    private static final String IN_PATH = "raw.csv";
-    private static final String OUT_PATH = "Sentients.csv";
-    private static final int ID_INDEX = 1;
-    private static final int TWEET_INDEX = 1;
-    private static final int TSD_INDEX = 1;
     private static final Logger LOG = Logger.getLogger(TweetMapper.class.getName());
-    String[] categories;
+
+    private static final int ID_INDEX = 23;
+    private static final int TSD_INDEX = 81;
+    private static final int TWEET_INDEX = 18;
+
+    private static final String OUT_PATH = "Sentiments.csv";
+
+    private static final String IN_DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss Z";
+    private static final String OUT_DATE_FORMAT = "yyyy-MM-dd-HH.mm";
+    private static final String DEFAULT_OUT_DATE = "0000-00-00-00.00";
+
+    // Sat, 24 May 2014 11:44:57 +0000
+    SimpleDateFormat dateParser = new SimpleDateFormat(IN_DATE_FORMAT);
+    SimpleDateFormat targetDate = new SimpleDateFormat(OUT_DATE_FORMAT);
 
     @Override
     public void map(MapEmitter emitter, String input) {
@@ -40,23 +46,26 @@ public class TweetMapper implements MapInstruction {
         try {
             CSVWriter writer = new CSVWriter(new FileWriter(OUT_PATH,true));
             CSVReader reader = new CSVReader(new StringReader(input));
-
             String[] entries = { "ID", "TSD", "Tweet", "Sentiment"};
-//            writer.writeNext(entries);
 
-            // skip header
-            String [] nextLine = reader.readNext();
+            String [] nextLine = null;
             while ((nextLine = reader.readNext()) != null) {
+                LOG.info(nextLine.toString());
                 // ID
-                entries[0] = nextLine[23];
+                entries[0] = nextLine[ID_INDEX];
                 // Timestamp
-                entries[1] = nextLine[81];
-                // Tweet
-                entries[2] = nextLine[18];
+                try {
+                    entries[1] = targetDate.format(dateParser.parse(nextLine[TSD_INDEX]));
+                } catch (ParseException e) {
+                    entries[1] = DEFAULT_OUT_DATE;
+                }
                 // Sentiment
-                entries[3] = findSentiment(nextLine[18]).toString();
+                entries[2] = findSentiment(nextLine[TWEET_INDEX]).toString();
+                // Tweet
+                entries[3] = nextLine[TWEET_INDEX];
+
                 writer.writeNext(entries);
-                emitter.emitIntermediateMapResult(entries[1], entries[3]);
+                emitter.emitIntermediateMapResult(entries[1], entries[2]);
             }
             reader.close();
             writer.close();

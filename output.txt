@@ -1,3 +1,0 @@
-line: 'This is total bullshit #NSA' sentiment: 2
-line: 'This is a testing file for my pipeline.' sentiment: 2
-line: 'I love my new iPhone #Apple' sentiment: 3

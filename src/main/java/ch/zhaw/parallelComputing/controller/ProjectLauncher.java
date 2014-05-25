@@ -44,7 +44,7 @@ public class ProjectLauncher {
 			// Properties could not be load - proceed with defaults
 		}
 		
-		LOG.log(Level.INFO, "Computation Config: Path={0} Offset={1} Logfile={3}", new Object[]{path, offset, logfile});
+		LOG.log(Level.INFO, "Computation Config: Path={0} Offset={1} Logfile={2}", new Object[]{path, offset, logfile});
 
 		MapReduceFactory.getMapReduce().start();
 
