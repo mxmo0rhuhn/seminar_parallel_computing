@@ -25,9 +25,5 @@ public class Computation extends Observable{
 
 	    super.setChanged();
  	    super.notifyObservers(results);
-
-        for(String key : results.keySet()) {
-            System.out.println("Key = "+ key + " Value = " + results.get(key));
-        }
 	}
 }

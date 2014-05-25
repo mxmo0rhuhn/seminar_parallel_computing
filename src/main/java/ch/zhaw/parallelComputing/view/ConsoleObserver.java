@@ -52,6 +52,10 @@ public class ConsoleObserver implements Observer {
 
 		printStreams("----------------------------------------------------------------");
 
+        for(String key : results.keySet()) {
+            printStreams("Key = "+ key + " Value = " + results.get(key).toString());
+        }
+
 		Date stopTSD = new Date();
 		long difference = stopTSD.getTime() - startTSD.getTime();
 
@@ -60,7 +64,7 @@ public class ConsoleObserver implements Observer {
 		long diffHours = difference / (60 * 60 * 1000) % 24;
 
 		startTSD = new Date();
-		printStreams(String.format("Elapsed time ~ %02l:%02l:02l",diffHours, diffMinutes, diffSeconds));
+		printStreams(String.format("Elapsed time ~ %02d:%02d:02d",diffHours, diffMinutes, diffSeconds));
 	}
 
 	private void redirectSystemStreams() {
