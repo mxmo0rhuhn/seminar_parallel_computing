@@ -10,6 +10,7 @@ import edu.stanford.nlp.util.CoreMap;
 
 import java.io.*;
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Properties;
@@ -29,6 +30,10 @@ public class CoreNLPTest {
     SimpleDateFormat targetDate = new SimpleDateFormat(OUT_DATE_FORMAT);
 
     public static void main(String[] args) throws Exception {
+        long diffHours = 3;
+
+        DecimalFormat df = new DecimalFormat("00");
+        System.out.println(String.format("Elapsed time ~ %s", df.format(diffHours)));
         new CoreNLPTest().parseCSV();
     }
 

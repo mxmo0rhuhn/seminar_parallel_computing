@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -53,18 +54,19 @@ public class ConsoleObserver implements Observer {
 		printStreams("----------------------------------------------------------------");
 
         for(String key : results.keySet()) {
-            printStreams("Key = "+ key + " Value = " + results.get(key).toString());
+            printStreams("Key = " + key + " Value = " + results.get(key).toString());
         }
 
 		Date stopTSD = new Date();
 		long difference = stopTSD.getTime() - startTSD.getTime();
+        startTSD = new Date();
 
+        DecimalFormat df = new DecimalFormat("00");
 		long diffSeconds = difference / 1000 % 60;
 		long diffMinutes = difference / (60 * 1000) % 60;
 		long diffHours = difference / (60 * 60 * 1000) % 24;
 
-		startTSD = new Date();
-		printStreams(String.format("Elapsed time ~ %02d:%02d:02d",diffHours, diffMinutes, diffSeconds));
+		printStreams(String.format("Elapsed time ~ %s:%s:%s",df.format(diffHours), df.format(diffMinutes), df.format(diffSeconds)));
 	}
 
 	private void redirectSystemStreams() {
