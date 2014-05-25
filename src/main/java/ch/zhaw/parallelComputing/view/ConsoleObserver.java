@@ -60,7 +60,7 @@ public class ConsoleObserver implements Observer {
 		long diffHours = difference / (60 * 60 * 1000) % 24;
 
 		startTSD = new Date();
-		printStreams("Elapsed time ~ " + diffHours + ":" + diffMinutes + "." + diffSeconds);
+		printStreams(String.format("Elapsed time ~ %02l:%02l:02l",diffHours, diffMinutes, diffSeconds));
 	}
 
 	private void redirectSystemStreams() {

@@ -32,17 +32,18 @@ public class ProjectLauncher {
         String path = "raw.csv";
         // Number of tweets per MAP task
         int offset = 10;
+        String logfile = new Date().getTime() + " log.txt";
 
 		Properties prop = new Properties();
 		try {
 			prop.load(new FileInputStream("parallelComputing.properties"));
 
-			path = prop.getProperty("path");
-            offset = Integer.parseInt(prop.getProperty("offset"));
+			path = prop.getProperty("path", path);
+            offset = Integer.parseInt(prop.getProperty("offset", "" + offset));
+            logfile = prop.getProperty(logfile, logfile);
 		} catch (IOException e) {
 			// Properties could not be load - proceed with defaults
 		}
-        String logfile = new Date().getTime() + " log.txt";
 
 		LOG.log(Level.INFO, "Computation Config: Path={0} Offset={1} Logfile={2}", new Object[]{path, offset, logfile});
 

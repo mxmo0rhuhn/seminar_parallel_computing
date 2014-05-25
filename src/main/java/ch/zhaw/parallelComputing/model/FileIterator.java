@@ -61,7 +61,7 @@ public class FileIterator implements Iterator<String> {
 	public String next() {
         StringBuffer toReturn = new StringBuffer();
 		if (hasNext()) {
-            for (Long i = 0L ; i<offset; i++) {
+            for (Long i = 0L ; hasNext && i<offset; i++) {
                 toReturn.append(testAndGetLine() +System.getProperty("line.separator"));
             }
 		}

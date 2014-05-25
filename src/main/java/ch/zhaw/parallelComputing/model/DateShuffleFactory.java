@@ -9,7 +9,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 
-import ch.zhaw.parallelComputing.view.HTMLFormatter;
 import ch.zhaw.mapreduce.KeyValuePair;
 import ch.zhaw.mapreduce.ShuffleProcessorFactory;
 
