@@ -3,6 +3,7 @@ package ch.zhaw.parallelComputing.controller;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Date;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,19 +32,18 @@ public class ProjectLauncher {
         String path = "raw.csv";
         // Number of tweets per MAP task
         int offset = 10;
-        String logfile = "log.txt";
 
 		Properties prop = new Properties();
 		try {
 			prop.load(new FileInputStream("parallelComputing.properties"));
 
 			path = prop.getProperty("path");
-            logfile = prop.getProperty("logfile");
             offset = Integer.parseInt(prop.getProperty("offset"));
 		} catch (IOException e) {
 			// Properties could not be load - proceed with defaults
 		}
-		
+        String logfile = new Date().getTime() + " log.txt";
+
 		LOG.log(Level.INFO, "Computation Config: Path={0} Offset={1} Logfile={2}", new Object[]{path, offset, logfile});
 
 		MapReduceFactory.getMapReduce().start();

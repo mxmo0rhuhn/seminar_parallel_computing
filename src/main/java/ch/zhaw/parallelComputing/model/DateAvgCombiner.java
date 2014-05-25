@@ -3,16 +3,21 @@ package ch.zhaw.parallelComputing.model;
 import ch.zhaw.mapreduce.CombinerInstruction;
 import ch.zhaw.mapreduce.KeyValuePair;
 import com.google.inject.internal.util.$SourceProvider;
+import org.apache.xpath.SourceTree;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * Created by Max
  */
 public class DateAvgCombiner implements CombinerInstruction {
 
+    private static final Logger LOG = Logger.getLogger(DateAvgCombiner.class.getName());
+
     @Override
     public List<KeyValuePair> combine(Iterator<KeyValuePair> keyValuePairIterator) {
+        LOG.entering(getClass().getName(), "combine");
 
         Map<String, Double[]> kvPairs = new HashMap<String, Double[]>();
         List<KeyValuePair> returnList = new ArrayList<KeyValuePair>();
@@ -36,6 +41,7 @@ public class DateAvgCombiner implements CombinerInstruction {
         while(mapIterator.hasNext()) {
             key = (String) mapIterator.next();
             tmp = kvPairs.get(key);
+            LOG.info("Combined " + tmp[0] + " tweets at " + key);
             returnList.add(new KeyValuePair(key, "" + (tmp[1]/tmp[0])));
         }
         return returnList;

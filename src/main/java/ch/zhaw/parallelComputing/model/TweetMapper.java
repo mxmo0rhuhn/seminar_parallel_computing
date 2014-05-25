@@ -41,7 +41,7 @@ public class TweetMapper implements MapInstruction {
 
     @Override
     public void map(MapEmitter emitter, String input) {
-        LOG.entering(getClass().getName(), "map", new Object[]{emitter, input});
+        LOG.entering(getClass().getName(), "map");
 
         try {
             CSVWriter writer = new CSVWriter(new FileWriter(OUT_PATH,true));
@@ -50,7 +50,6 @@ public class TweetMapper implements MapInstruction {
 
             String [] nextLine = null;
             while ((nextLine = reader.readNext()) != null) {
-                LOG.info(nextLine.toString());
                 // ID
                 entries[0] = nextLine[ID_INDEX];
                 // Timestamp
