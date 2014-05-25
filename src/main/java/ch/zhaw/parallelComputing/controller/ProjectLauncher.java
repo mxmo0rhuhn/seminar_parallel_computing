@@ -33,14 +33,15 @@ public class ProjectLauncher {
         // Number of tweets per MAP task
         int offset = 10;
         String logfile = new Date().getTime() + " log.txt";
+        boolean activeWindow = true;
 
 		Properties prop = new Properties();
 		try {
 			prop.load(new FileInputStream("parallelComputing.properties"));
-
-			path = prop.getProperty("path", path);
+            path = prop.getProperty("path", path);
             offset = Integer.parseInt(prop.getProperty("offset", "" + offset));
-            logfile = prop.getProperty(logfile, logfile);
+            logfile = prop.getProperty("logfile", logfile);
+            activeWindow = Boolean.valueOf(prop.getProperty("window", "" + activeWindow));
 		} catch (IOException e) {
 			// Properties could not be load - proceed with defaults
 		}
@@ -50,7 +51,7 @@ public class ProjectLauncher {
 		MapReduceFactory.getMapReduce().start();
 
 		Computation validator = new Computation();
-		validator.addObserver(new ConsoleObserver(logfile));
+		validator.addObserver(new ConsoleObserver(logfile, activeWindow));
         validator.start(path, offset);
 
 		MapReduceFactory.getMapReduce().stop();

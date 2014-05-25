@@ -31,11 +31,11 @@ public class ConsoleObserver implements Observer {
 	private final ConsoleOutput outConsole;
 	private Date startTSD;
 
-	public ConsoleObserver(String out ) {
+	public ConsoleObserver(String out, boolean activeWindow) {
 		startTSD = new Date();
 
 		outFile = new File(out);
-		outConsole = new ConsoleOutput();
+		outConsole = new ConsoleOutput(activeWindow);
 
 		printStreams("Seminar Parallel Computing - ZHAW FS 2014 - Max Schrimpf");
 		redirectSystemStreams();
