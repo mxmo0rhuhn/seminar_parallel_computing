@@ -48,7 +48,7 @@ public class TweetMapper implements MapInstruction {
             CSVReader reader = new CSVReader(new StringReader(input));
             String[] entries = { "ID", "TSD", "Tweet", "Sentiment"};
 
-            String [] nextLine = null;
+            String [] nextLine;
             while ((nextLine = reader.readNext()) != null) {
                 // ID
                 entries[0] = nextLine[ID_INDEX];
@@ -69,7 +69,8 @@ public class TweetMapper implements MapInstruction {
             reader.close();
             writer.close();
         } catch (Exception e) {
-            LOG.severe(e.getMessage());
+            e.printStackTrace(System.out);
+            LOG.severe("ERROR in MAP step!!!");
         }
     }
 

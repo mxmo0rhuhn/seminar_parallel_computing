@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.logging.Logger;
 
 /**
  * Slices the input file for processing
@@ -14,6 +15,7 @@ import java.util.Iterator;
  */
 public class FileIterator implements Iterator<String> {
 
+    private static final Logger LOG = Logger.getLogger(FileIterator.class.getName());
 	//  The size of the slices
 	private final Long offset;
     private final BufferedReader reader;
@@ -26,7 +28,8 @@ public class FileIterator implements Iterator<String> {
         try {
             tmp = new BufferedReader(new FileReader(filename));
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            e.printStackTrace(System.out);
+            LOG.severe("ERROR in MAP step!!!");
         }
 
         reader = tmp;
@@ -39,12 +42,16 @@ public class FileIterator implements Iterator<String> {
         try {
             line = reader.readLine();
         } catch (IOException e) {
+            e.printStackTrace(System.out);
+            LOG.severe("File-Iterator can't read line");
         }
 
         if (line == null) {
             try {
                 reader.close();
             } catch (IOException e) {
+                e.printStackTrace(System.out);
+                LOG.severe("File-Iterator can't close file");
             }
             hasNext = false;
             return null;
@@ -59,13 +66,17 @@ public class FileIterator implements Iterator<String> {
 
 	@Override
 	public String next() {
-        StringBuffer toReturn = new StringBuffer();
-		if (hasNext()) {
-            for (Long i = 0L ; hasNext && i<offset; i++) {
-                toReturn.append(testAndGetLine() +System.getProperty("line.separator"));
+        StringBuilder toReturn = new StringBuilder();
+        Long i = 1L;
+        String line;
+		while ((line = testAndGetLine()) != null) {
+            i++;
+            toReturn.append(line);
+            toReturn.append(System.getProperty("line.separator"));
+            if (i > offset) {
+                break;
             }
 		}
-
         return toReturn.toString();
 	}
 

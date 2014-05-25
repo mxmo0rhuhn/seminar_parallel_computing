@@ -2,8 +2,6 @@ package ch.zhaw.parallelComputing.model;
 
 import ch.zhaw.mapreduce.CombinerInstruction;
 import ch.zhaw.mapreduce.KeyValuePair;
-import com.google.inject.internal.util.$SourceProvider;
-import org.apache.xpath.SourceTree;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -19,8 +17,8 @@ public class DateAvgCombiner implements CombinerInstruction {
     public List<KeyValuePair> combine(Iterator<KeyValuePair> keyValuePairIterator) {
         LOG.entering(getClass().getName(), "combine");
 
-        Map<String, Double[]> kvPairs = new HashMap<String, Double[]>();
-        List<KeyValuePair> returnList = new ArrayList<KeyValuePair>();
+        Map<String, Double[]> kvPairs = new HashMap<>();
+        List<KeyValuePair> returnList = new ArrayList<>();
         String key;
         Double[] tmp;
 

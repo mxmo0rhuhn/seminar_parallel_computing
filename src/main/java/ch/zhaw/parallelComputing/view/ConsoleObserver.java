@@ -3,6 +3,8 @@
  */
 package ch.zhaw.parallelComputing.view;
 
+import ch.zhaw.parallelComputing.model.TweetMapper;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -18,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.logging.Logger;
 
 /**
  * Some logging while the computation is running
@@ -26,6 +29,8 @@ import java.util.Observer;
  * 
  */
 public class ConsoleObserver implements Observer {
+
+    private static final Logger LOG = Logger.getLogger(ConsoleObserver.class.getName());
 
 	private final DateFormat logTsdFormat = new SimpleDateFormat("hh:mm:ss:SS");
 	private final File outFile;
@@ -66,7 +71,7 @@ public class ConsoleObserver implements Observer {
 		long diffMinutes = difference / (60 * 1000) % 60;
 		long diffHours = difference / (60 * 60 * 1000) % 24;
 
-		printStreams(String.format("Elapsed time ~ %s:%s:%s",df.format(diffHours), df.format(diffMinutes), df.format(diffSeconds)));
+		printStreams(String.format("Elapsed time ~ %s:%s:%s h",df.format(diffHours), df.format(diffMinutes), df.format(diffSeconds)));
 	}
 
 	private void redirectSystemStreams() {
@@ -87,8 +92,25 @@ public class ConsoleObserver implements Observer {
 			}
 		};
 
+        OutputStream log = new OutputStream() {
+            @Override
+            public void write(int b) throws IOException {
+                LOG.fine(String.valueOf((char) b));
+            }
+
+            @Override
+            public void write(byte[] b, int off, int len) throws IOException {
+                LOG.fine(new String(b, off, len));
+            }
+
+            @Override
+            public void write(byte[] b) throws IOException {
+                write(b, 0, b.length);
+            }
+        };
+
 		System.setOut(new PrintStream(out, true));
-		System.setErr(new PrintStream(out, true));
+		System.setErr(new PrintStream(log, true));
 	}
 
 	public void printStreams(String line) {

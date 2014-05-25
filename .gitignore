@@ -19,6 +19,8 @@
 *.war
 *.ear
 
+# local test
+CoreNLPTest.java
 
 # Maven
 target/**

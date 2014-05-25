@@ -1,6 +1,5 @@
 package ch.zhaw.parallelComputing.controller;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Date;
@@ -8,7 +7,6 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import ch.zhaw.parallelComputing.model.DateShuffleFactory;
 import ch.zhaw.parallelComputing.model.Computation;
 import ch.zhaw.parallelComputing.view.ConsoleObserver;
 import ch.zhaw.mapreduce.MapReduceFactory;
