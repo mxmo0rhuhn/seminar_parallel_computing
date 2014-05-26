@@ -20,6 +20,7 @@ import ch.zhaw.parallelComputing.view.GUI;
 public class ProjectLauncher {
 	
 	private static final Logger LOG = Logger.getLogger(ProjectLauncher.class.getName());
+    private final ConsoleObserver observer;
 
 	public static void main(String[] args) {
 		new ProjectLauncher();
@@ -45,15 +46,27 @@ public class ProjectLauncher {
 			// Properties could not be load - proceed with defaults
 		}
 
-		LOG.log(Level.INFO, "Computation Config: Path={0} Offset={1} Logfile={2}", new Object[]{path, offset, logfile});
+		LOG.log(Level.INFO, "Computation Config: Path={0} Offset={1} Logfile={2} Window={3}", new Object[]{path, offset, logfile, activeWindow});
 
 		MapReduceFactory.getMapReduce().start();
+        Computation computation = new Computation(offset);
 
-		Computation computation = new Computation(offset);
-        GUI gui = new GUI(computation);
-		computation.addObserver(new ConsoleObserver(logfile, computation, gui));
+        GUI gui = null;
+        if(activeWindow) {
+            gui = new GUI(path, computation, this);
+        }
+        observer = new ConsoleObserver(logfile, computation, gui);
+		computation.addObserver(observer);
 
-//		MapReduceFactory.getMapReduce().stop();
-//		System.exit(0);
+        if(!activeWindow) {
+            computation.start(path);
+            exit();
+        }
+    }
+
+    public void exit() {
+        observer.printStreams("Exiting");
+		MapReduceFactory.getMapReduce().stop();
+		System.exit(0);
 	}
 }

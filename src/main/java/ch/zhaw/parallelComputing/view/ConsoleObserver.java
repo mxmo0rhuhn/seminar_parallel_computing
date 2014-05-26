@@ -84,12 +84,12 @@ public class ConsoleObserver implements Observer {
 		OutputStream out = new OutputStream() {
 			@Override
 			public void write(int b) throws IOException {
-				printStreams(String.valueOf((char) b));
+				printStreams(String.valueOf((char) b), false);
 			}
 
 			@Override
 			public void write(byte[] b, int off, int len) throws IOException {
-				printStreams(new String(b, off, len));
+				printStreams(new String(b, off, len), false);
 			}
 
 			@Override
@@ -116,13 +116,23 @@ public class ConsoleObserver implements Observer {
         };
 
 		System.setOut(new PrintStream(out, true));
-		System.setErr(new PrintStream(log, true));
+		System.setErr(new PrintStream(out, true));
 	}
 
-	public void printStreams(String line) {
+	public void printStreams(String line ) {
+        printStreams(line, true);
+    }
+
+    public void printStreams(String line, boolean newLine) {
 		String tsd = logTsdFormat.format(Calendar.getInstance().getTime());
 
-		activeWindow.println(tsd + " " + line);
+        if(activeWindow != null) {
+            if(newLine){
+                activeWindow.println(tsd + " " + line + "\n");
+            } else {
+                activeWindow.println(tsd + " " + line);
+            }
+        }
 		fileWriteLn(tsd + " " + line);
 	}
 

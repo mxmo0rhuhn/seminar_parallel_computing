@@ -1,12 +1,13 @@
 package ch.zhaw.parallelComputing.view;
 
+import ch.zhaw.parallelComputing.controller.ProjectLauncher;
 import ch.zhaw.parallelComputing.model.Computation;
+import sun.launcher.resources.launcher;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.io.File;
 
 /**
@@ -23,26 +24,47 @@ public class GUI extends JFrame {
     private JButton startButton;
     private JLabel selectedFileLabel;
 
+    private final ProjectLauncher launcher;
     private final Computation comp;
     private String currentFile;
 
     public void enableStartButton() {
         startButton.setEnabled(true);
     }
-    public GUI(Computation comp ) {
+
+    WindowListener exitListener = new WindowAdapter() {
+
+        @Override
+        public void windowClosing(WindowEvent e) {
+            int confirm = 1;
+            if(comp.isResults()){
+               confirm = 0;
+            } else {
+                confirm = JOptionPane.showOptionDialog(GUI.this, "A computation is running - Are You Sure to Close Application?", "Exit Confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+            }
+            if (confirm == 0) {
+                launcher.exit();
+            }
+        }
+    };
+
+    public GUI(String currentFile, Computation comp, ProjectLauncher launcher) {
         super("Seminar paralell computing");
+        addWindowListener(exitListener);
+        this.currentFile = currentFile;
         this.comp = comp;
-        currentFile = null;
+        this.launcher = launcher;
+        GUI.this.selectedFileLabel.setText(currentFile);
 
         startButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                if(currentFile != null) {
+                if(GUI.this.currentFile != null) {
                     startButton.setEnabled(false);
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            GUI.this.comp.start(currentFile);
+                            GUI.this.comp.start(GUI.this.currentFile);
                         }
                     }).start();
                 } else {
@@ -57,8 +79,8 @@ public class GUI extends JFrame {
                 File workingDirectory = new File(System.getProperty("user.dir"));
                 JFileChooser chooser = new JFileChooser();
                 chooser.setCurrentDirectory(workingDirectory);
-                //FileNameExtensionFilter filter = new FileNameExtensionFilter("csv");
-                //chooser.addChoosableFileFilter(filter);
+                FileNameExtensionFilter filter = new FileNameExtensionFilter("CSV Files", "csv");
+                chooser.addChoosableFileFilter(filter);
                 chooser.setMultiSelectionEnabled(false);
                 int option = chooser.showOpenDialog(GUI.this);
 
@@ -75,7 +97,6 @@ public class GUI extends JFrame {
         setSize(new Dimension(800, 300));
         setResizable(false);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         pack();
         setVisible(true);
     }
@@ -90,7 +111,7 @@ public class GUI extends JFrame {
             /** {@inheritDoc} */
             @Override
             public void run() {
-                GUI.this.logArea.append(text + "\n");
+                GUI.this.logArea.append(text);
             }
         });
     }

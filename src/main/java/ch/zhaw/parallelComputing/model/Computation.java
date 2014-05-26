@@ -23,6 +23,7 @@ public class Computation extends Observable{
     private boolean results;
 
 	public Computation(Long offset) {
+        results = true;
 		computer = MapReduceFactory.getMapReduce().newMRTask(new TweetMapper() , new DateAvgReducer(), new DateAvgCombiner(), null);
         this.offset = offset;
 	}
