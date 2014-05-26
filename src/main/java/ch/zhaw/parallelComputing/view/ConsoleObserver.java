@@ -58,6 +58,7 @@ public class ConsoleObserver implements Observer {
 	public void update(Observable o, Object arg) {
 
         if(sentimentComputation.isResults()) {
+            ConsoleObserver.this.activeWindow.enableStartButton();
             Date stopTSD = new Date();
             long difference = stopTSD.getTime() - startTSD.getTime();
             long diffSeconds = difference / 1000 % 60;
@@ -116,7 +117,7 @@ public class ConsoleObserver implements Observer {
         };
 
 		System.setOut(new PrintStream(out, true));
-		System.setErr(new PrintStream(out, true));
+		System.setErr(new PrintStream(log, true));
 	}
 
 	public void printStreams(String line ) {
