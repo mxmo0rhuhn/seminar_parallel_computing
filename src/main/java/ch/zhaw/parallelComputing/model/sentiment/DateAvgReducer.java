@@ -1,4 +1,4 @@
-package ch.zhaw.parallelComputing.model;
+package ch.zhaw.parallelComputing.model.sentiment;
 
 import java.util.Iterator;
 import java.util.logging.Logger;

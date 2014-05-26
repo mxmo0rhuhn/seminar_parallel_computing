@@ -3,7 +3,7 @@
  */
 package ch.zhaw.parallelComputing.view;
 
-import ch.zhaw.parallelComputing.model.Computation;
+import ch.zhaw.parallelComputing.model.sentiment.SentimentComputation;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -23,7 +23,7 @@ import java.util.Observer;
 import java.util.logging.Logger;
 
 /**
- * Some logging while the computation is running
+ * Some logging while the sentimentComputation is running
  *
  * @author Max
  * 
@@ -36,14 +36,14 @@ public class ConsoleObserver implements Observer {
 	private final File outFile;
 	private Date startTSD;
     private final GUI activeWindow;
-    private final Computation computation;
+    private final SentimentComputation sentimentComputation;
 
-	public ConsoleObserver(String out, Computation computation, GUI activeWindow) {
+	public ConsoleObserver(String out, SentimentComputation sentimentComputation, GUI activeWindow) {
 		startTSD = new Date();
 
 		outFile = new File(out);
 		this.activeWindow = activeWindow;
-        this.computation = computation;
+        this.sentimentComputation = sentimentComputation;
 
 		printStreams("Seminar Parallel Computing - ZHAW FS 2014 - Max Schrimpf");
 		redirectSystemStreams();
@@ -57,7 +57,7 @@ public class ConsoleObserver implements Observer {
 	@Override
 	public void update(Observable o, Object arg) {
 
-        if(computation.isResults()) {
+        if(sentimentComputation.isResults()) {
             Date stopTSD = new Date();
             long difference = stopTSD.getTime() - startTSD.getTime();
             long diffSeconds = difference / 1000 % 60;
@@ -76,7 +76,7 @@ public class ConsoleObserver implements Observer {
         } else {
             startTSD = new Date();
             printStreams("----------------------------------------------------------------");
-            printStreams("Computation Started");
+            printStreams("SentimentComputation Started");
         }
 	}
 
@@ -126,17 +126,14 @@ public class ConsoleObserver implements Observer {
     public void printStreams(String line, boolean newLine) {
 		String tsd = logTsdFormat.format(Calendar.getInstance().getTime());
 
+        line = (tsd + " " + line);
         if(activeWindow != null) {
-            if(newLine){
-                activeWindow.println(tsd + " " + line + "\n");
-            } else {
-                activeWindow.println(tsd + " " + line);
-            }
+                activeWindow.println(line,newLine);
         }
-		fileWriteLn(tsd + " " + line);
+		fileWriteLn(line);
 	}
 
-	public void fileWriteLn(String line) {
+	public void fileWriteLn(String line ) {
 		BufferedWriter curFW = null;
 		try {
 			try {

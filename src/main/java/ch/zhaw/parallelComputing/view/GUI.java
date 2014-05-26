@@ -1,8 +1,8 @@
 package ch.zhaw.parallelComputing.view;
 
 import ch.zhaw.parallelComputing.controller.ProjectLauncher;
-import ch.zhaw.parallelComputing.model.Computation;
-import sun.launcher.resources.launcher;
+import ch.zhaw.parallelComputing.model.FileAnalyzer;
+import ch.zhaw.parallelComputing.model.sentiment.SentimentComputation;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -15,7 +15,6 @@ import java.io.File;
  */
 public class GUI extends JFrame {
     private JPanel rootPanel;
-    private JTextPane logPane;
     private JScrollPane logScrollPane;
     private JRadioButton showColumnsRadioButton;
     private JRadioButton evaluateRadioButton;
@@ -25,8 +24,9 @@ public class GUI extends JFrame {
     private JLabel selectedFileLabel;
 
     private final ProjectLauncher launcher;
-    private final Computation comp;
+    private final SentimentComputation comp;
     private String currentFile;
+    private final FileAnalyzer analyzer;
 
     public void enableStartButton() {
         startButton.setEnabled(true);
@@ -48,27 +48,38 @@ public class GUI extends JFrame {
         }
     };
 
-    public GUI(String currentFile, Computation comp, ProjectLauncher launcher) {
+    public GUI(String currentFile, SentimentComputation comp, ProjectLauncher launcher) {
         super("Seminar paralell computing");
         addWindowListener(exitListener);
         this.currentFile = currentFile;
+        this.analyzer = new FileAnalyzer(this);
         this.comp = comp;
         this.launcher = launcher;
         GUI.this.selectedFileLabel.setText(currentFile);
 
         startButton.addActionListener(new ActionListener() {
+
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 if(GUI.this.currentFile != null) {
-                    startButton.setEnabled(false);
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            GUI.this.comp.start(GUI.this.currentFile);
-                        }
-                    }).start();
+                    if(evaluateRadioButton.isSelected()) {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                GUI.this.startButton.setEnabled(false);
+                                GUI.this.comp.start(GUI.this.currentFile);
+                            }
+                        }).start();
+                    } else if (showColumnsRadioButton.isSelected()) {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                GUI.this.analyzer.printHeaderWithIndex(GUI.this.currentFile);
+                            }
+                        }).start();
+                    }
                 } else {
-                   GUI.this.println("No File selected");
+                    GUI.this.println("No File selected");
                 }
             }
         });
@@ -105,13 +116,21 @@ public class GUI extends JFrame {
         this.logArea.setEditable(false);
     }
 
-    public void println(final String text) {
+    public void println(String line) {
+        println(line, true);
+    }
+
+    public void println(final String text, final boolean newline){
         SwingUtilities.invokeLater(new Runnable() {
 
             /** {@inheritDoc} */
             @Override
             public void run() {
-                GUI.this.logArea.append(text);
+                if (newline) {
+                    GUI.this.logArea.append(text + System.getProperty("line.separator"));
+                } else {
+                    GUI.this.logArea.append(text);
+                }
             }
         });
     }

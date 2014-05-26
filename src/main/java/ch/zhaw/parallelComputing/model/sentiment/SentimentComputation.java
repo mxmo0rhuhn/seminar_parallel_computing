@@ -1,4 +1,4 @@
-package ch.zhaw.parallelComputing.model;
+package ch.zhaw.parallelComputing.model.sentiment;
 
 import ch.zhaw.mapreduce.MapReduce;
 import ch.zhaw.mapreduce.MapReduceFactory;
@@ -11,7 +11,7 @@ import java.util.Observable;
  * @author Max
  * 
  */
-public class Computation extends Observable{
+public class SentimentComputation extends Observable{
 
 	private final MapReduce computer;
     private final Long offset;
@@ -22,7 +22,7 @@ public class Computation extends Observable{
 
     private boolean results;
 
-	public Computation(Long offset) {
+	public SentimentComputation(Long offset) {
         results = true;
 		computer = MapReduceFactory.getMapReduce().newMRTask(new TweetMapper() , new DateAvgReducer(), new DateAvgCombiner(), null);
         this.offset = offset;

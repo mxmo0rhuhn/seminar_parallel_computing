@@ -1,4 +1,4 @@
-package ch.zhaw.parallelComputing.model;
+package ch.zhaw.parallelComputing.model.sentiment;
 
 import ch.zhaw.mapreduce.CombinerInstruction;
 import ch.zhaw.mapreduce.KeyValuePair;

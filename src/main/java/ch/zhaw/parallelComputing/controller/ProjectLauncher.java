@@ -7,7 +7,8 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import ch.zhaw.parallelComputing.model.Computation;
+import ch.zhaw.parallelComputing.model.FileAnalyzer;
+import ch.zhaw.parallelComputing.model.sentiment.SentimentComputation;
 import ch.zhaw.parallelComputing.view.ConsoleObserver;
 import ch.zhaw.mapreduce.MapReduceFactory;
 import ch.zhaw.parallelComputing.view.GUI;
@@ -32,11 +33,13 @@ public class ProjectLauncher {
         String path = "raw.csv";
         // Number of tweets per MAP task
         Long offset = 10L;
+        // Default logfile
         String logfile = new Date().getTime() + " log.txt";
+        // with or without GUI
         boolean activeWindow = true;
 
-		Properties prop = new Properties();
-		try {
+        Properties prop = new Properties();
+        try {
 			prop.load(new FileInputStream("parallelComputing.properties"));
             path = prop.getProperty("path", path);
             offset = Long.parseLong(prop.getProperty("offset", "" + offset));
@@ -46,20 +49,20 @@ public class ProjectLauncher {
 			// Properties could not be load - proceed with defaults
 		}
 
-		LOG.log(Level.INFO, "Computation Config: Path={0} Offset={1} Logfile={2} Window={3}", new Object[]{path, offset, logfile, activeWindow});
-
+		LOG.log(Level.INFO, "SentimentComputation Config: Path={0} Offset={1} Logfile={2} Window={3}", new Object[]{path, offset, logfile, activeWindow});
 		MapReduceFactory.getMapReduce().start();
-        Computation computation = new Computation(offset);
-
+        SentimentComputation sentimentComputation = new SentimentComputation(offset);
         GUI gui = null;
+
         if(activeWindow) {
-            gui = new GUI(path, computation, this);
+            gui = new GUI(path, sentimentComputation, this);
         }
-        observer = new ConsoleObserver(logfile, computation, gui);
-		computation.addObserver(observer);
+
+        observer = new ConsoleObserver(logfile, sentimentComputation, gui);
+		sentimentComputation.addObserver(observer);
 
         if(!activeWindow) {
-            computation.start(path);
+            sentimentComputation.start(path);
             exit();
         }
     }

@@ -1,4 +1,4 @@
-package ch.zhaw.parallelComputing.model;
+package ch.zhaw.parallelComputing.model.sentiment;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
