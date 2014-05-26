@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import ch.zhaw.parallelComputing.model.Computation;
 import ch.zhaw.parallelComputing.view.ConsoleObserver;
 import ch.zhaw.mapreduce.MapReduceFactory;
+import ch.zhaw.parallelComputing.view.GUI;
 
 /**
  * This class is starting the map-reduce application
@@ -29,7 +30,7 @@ public class ProjectLauncher {
         // Input file
         String path = "raw.csv";
         // Number of tweets per MAP task
-        int offset = 10;
+        Long offset = 10L;
         String logfile = new Date().getTime() + " log.txt";
         boolean activeWindow = true;
 
@@ -37,7 +38,7 @@ public class ProjectLauncher {
 		try {
 			prop.load(new FileInputStream("parallelComputing.properties"));
             path = prop.getProperty("path", path);
-            offset = Integer.parseInt(prop.getProperty("offset", "" + offset));
+            offset = Long.parseLong(prop.getProperty("offset", "" + offset));
             logfile = prop.getProperty("logfile", logfile);
             activeWindow = Boolean.valueOf(prop.getProperty("window", "" + activeWindow));
 		} catch (IOException e) {
@@ -48,11 +49,11 @@ public class ProjectLauncher {
 
 		MapReduceFactory.getMapReduce().start();
 
-		Computation validator = new Computation();
-		validator.addObserver(new ConsoleObserver(logfile, activeWindow));
-        validator.start(path, offset);
+		Computation computation = new Computation(offset);
+        GUI gui = new GUI(computation);
+		computation.addObserver(new ConsoleObserver(logfile, computation, gui));
 
-		MapReduceFactory.getMapReduce().stop();
-		System.exit(0);
+//		MapReduceFactory.getMapReduce().stop();
+//		System.exit(0);
 	}
 }

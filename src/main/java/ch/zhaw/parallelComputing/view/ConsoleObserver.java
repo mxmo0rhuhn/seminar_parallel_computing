@@ -3,7 +3,7 @@
  */
 package ch.zhaw.parallelComputing.view;
 
-import ch.zhaw.parallelComputing.model.TweetMapper;
+import ch.zhaw.parallelComputing.model.Computation;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -34,14 +34,16 @@ public class ConsoleObserver implements Observer {
 
 	private final DateFormat logTsdFormat = new SimpleDateFormat("hh:mm:ss:SS");
 	private final File outFile;
-	private final ConsoleOutput outConsole;
 	private Date startTSD;
+    private final GUI activeWindow;
+    private final Computation computation;
 
-	public ConsoleObserver(String out, boolean activeWindow) {
+	public ConsoleObserver(String out, Computation computation, GUI activeWindow) {
 		startTSD = new Date();
 
 		outFile = new File(out);
-		outConsole = new ConsoleOutput(activeWindow);
+		this.activeWindow = activeWindow;
+        this.computation = computation;
 
 		printStreams("Seminar Parallel Computing - ZHAW FS 2014 - Max Schrimpf");
 		redirectSystemStreams();
@@ -54,24 +56,28 @@ public class ConsoleObserver implements Observer {
 	 */
 	@Override
 	public void update(Observable o, Object arg) {
-		Map<String, List<String>> results = (Map<String, List<String>>) arg;
 
-		printStreams("----------------------------------------------------------------");
+        if(computation.isResults()) {
+            Date stopTSD = new Date();
+            long difference = stopTSD.getTime() - startTSD.getTime();
+            long diffSeconds = difference / 1000 % 60;
+            long diffMinutes = difference / (60 * 1000) % 60;
+            long diffHours = difference / (60 * 60 * 1000) % 24;
 
-        for(String key : results.keySet()) {
-            printStreams("Key = " + key + " Value = " + results.get(key).toString());
+            Map<String, List<String>> results = (Map<String, List<String>>) arg;
+
+            for(String key : results.keySet()) {
+                printStreams("Key = " + key + " Value = " + results.get(key).toString());
+            }
+
+            DecimalFormat df = new DecimalFormat("00");
+            printStreams(String.format("Elapsed time ~ %s:%s:%s h",df.format(diffHours), df.format(diffMinutes), df.format(diffSeconds)));
+            printStreams("----------------------------------------------------------------");
+        } else {
+            startTSD = new Date();
+            printStreams("----------------------------------------------------------------");
+            printStreams("Computation Started");
         }
-
-		Date stopTSD = new Date();
-		long difference = stopTSD.getTime() - startTSD.getTime();
-        startTSD = new Date();
-
-        DecimalFormat df = new DecimalFormat("00");
-		long diffSeconds = difference / 1000 % 60;
-		long diffMinutes = difference / (60 * 1000) % 60;
-		long diffHours = difference / (60 * 60 * 1000) % 24;
-
-		printStreams(String.format("Elapsed time ~ %s:%s:%s h",df.format(diffHours), df.format(diffMinutes), df.format(diffSeconds)));
 	}
 
 	private void redirectSystemStreams() {
@@ -116,7 +122,7 @@ public class ConsoleObserver implements Observer {
 	public void printStreams(String line) {
 		String tsd = logTsdFormat.format(Calendar.getInstance().getTime());
 
-		outConsole.println(tsd + " " + line);
+		activeWindow.println(tsd + " " + line);
 		fileWriteLn(tsd + " " + line);
 	}
 

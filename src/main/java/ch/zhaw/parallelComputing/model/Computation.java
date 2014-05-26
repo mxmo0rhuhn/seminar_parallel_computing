@@ -14,16 +14,28 @@ import java.util.Observable;
 public class Computation extends Observable{
 
 	private final MapReduce computer;
+    private final Long offset;
 
+    public boolean isResults() {
+        return results;
+    }
 
-	public Computation() {
+    private boolean results;
+
+	public Computation(Long offset) {
 		computer = MapReduceFactory.getMapReduce().newMRTask(new TweetMapper() , new DateAvgReducer(), new DateAvgCombiner(), null);
+        this.offset = offset;
 	}
 
-	public void start(String filename, int offset) {
-		Map<String, List<String>> results = computer.runMapReduceTask(new FileIterator(filename, new Long(offset)));
+	public void start(String filename) {
+        results = false;
+        super.setChanged();
+        super.notifyObservers();
 
+		Map<String, List<String>> result = computer.runMapReduceTask(new FileIterator(filename, offset));
+
+        results = true;
 	    super.setChanged();
- 	    super.notifyObservers(results);
+ 	    super.notifyObservers(result);
 	}
 }

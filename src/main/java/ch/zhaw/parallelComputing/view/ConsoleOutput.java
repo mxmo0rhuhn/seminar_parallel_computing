@@ -47,11 +47,7 @@ public class ConsoleOutput extends JFrame {
 
         add(this.panel);
 
-        setResizable(true);
-        setLocationRelativeTo(null);
         setTitle("Log");
-        setSize(new Dimension(800, 300));
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setVisible(true);
     }
 
@@ -61,16 +57,4 @@ public class ConsoleOutput extends JFrame {
      * @param text
      *            The text to display
      */
-    public void println(final String text) {
-        if(active) {
-            SwingUtilities.invokeLater(new Runnable() {
-
-                /** {@inheritDoc} */
-                @Override
-                public void run() {
-                    ConsoleOutput.this.textArea.append(text + "\n");
-                }
-            });
-        }
-    }
 }
