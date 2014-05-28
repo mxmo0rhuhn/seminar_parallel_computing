@@ -7,11 +7,11 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import ch.zhaw.parallelComputing.model.FileAnalyzer;
 import ch.zhaw.parallelComputing.model.sentiment.SentimentComputation;
 import ch.zhaw.parallelComputing.view.ConsoleObserver;
 import ch.zhaw.mapreduce.MapReduceFactory;
 import ch.zhaw.parallelComputing.view.GUI;
+
 
 /**
  * This class is starting the map-reduce application

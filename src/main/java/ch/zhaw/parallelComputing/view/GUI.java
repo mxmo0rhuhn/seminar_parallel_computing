@@ -22,6 +22,7 @@ public class GUI extends JFrame {
     private JTextArea logArea;
     private JButton startButton;
     private JLabel selectedFileLabel;
+    private JRadioButton compareRadioButton;
 
     private final ProjectLauncher launcher;
     private final SentimentComputation comp;

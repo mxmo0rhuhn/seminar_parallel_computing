@@ -17,12 +17,14 @@
           <component id="a3354" class="javax.swing.JTextArea" binding="logArea">
             <constraints/>
             <properties>
+              <editable value="false"/>
+              <lineWrap value="false"/>
               <text value=""/>
             </properties>
           </component>
         </children>
       </scrollpane>
-      <grid id="cf4b3" layout-manager="GridLayoutManager" row-count="4" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+      <grid id="cf4b3" layout-manager="GridLayoutManager" row-count="5" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints border-constraint="North"/>
         <properties/>
@@ -46,7 +48,7 @@
             </constraints>
             <properties>
               <selected value="true"/>
-              <text value="Evaluate "/>
+              <text value="Determine Sentiment"/>
             </properties>
           </component>
           <component id="2252f" class="javax.swing.JButton" binding="selectInputButton" default-binding="true">
@@ -59,7 +61,7 @@
           </component>
           <component id="ac2b1" class="javax.swing.JButton" binding="startButton" default-binding="true">
             <constraints>
-              <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <text value="Start"/>
@@ -73,7 +75,15 @@
             </constraints>
             <properties>
               <selected value="false"/>
-              <text value="Show Columns"/>
+              <text value="Select Columns"/>
+            </properties>
+          </component>
+          <component id="d5d0a" class="javax.swing.JRadioButton" binding="compareRadioButton" default-binding="true">
+            <constraints>
+              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Compare "/>
             </properties>
           </component>
         </children>
@@ -84,6 +94,7 @@
     <group name="Task grp">
       <member id="ebdf3"/>
       <member id="96543"/>
+      <member id="d5d0a"/>
     </group>
   </buttonGroups>
 </form>
