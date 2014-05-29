@@ -30,7 +30,7 @@ public class Plotter {
         new Plotter().plot("Test", dataset1, dataset2);
     }
 
-    private static void plot(String title, XYDataset dataset1, XYDataset dataset2) {
+    public static void plot(String title, XYDataset dataset1, XYDataset dataset2) {
 
         JFreeChart chart = ChartFactory.createTimeSeriesChart(
                 "Comparison",           // title

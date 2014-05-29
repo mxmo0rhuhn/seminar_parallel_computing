@@ -1,7 +1,7 @@
 package ch.zhaw.parallelComputing.view;
 
 import ch.zhaw.parallelComputing.controller.ProjectLauncher;
-import ch.zhaw.parallelComputing.model.FileAnalyzer;
+import ch.zhaw.parallelComputing.model.CSVHandler;
 import ch.zhaw.parallelComputing.model.sentiment.SentimentComputation;
 
 import javax.swing.*;
@@ -9,25 +9,26 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.text.DecimalFormat;
+import java.util.List;
 
 /**
  * Created by Max Schrimpf
  */
 public class GUI extends JFrame {
     private JPanel rootPanel;
-    private JScrollPane logScrollPane;
     private JRadioButton showColumnsRadioButton;
     private JRadioButton evaluateRadioButton;
-    private JButton selectInputButton;
+    private JRadioButton compareRadioButton;
+    private JScrollPane logScrollPane;
     private JTextArea logArea;
     private JButton startButton;
-    private JLabel selectedFileLabel;
-    private JRadioButton compareRadioButton;
+    private JButton selectInputButton;
+    private JButton selectCompareButton;
 
     private final ProjectLauncher launcher;
     private final SentimentComputation comp;
     private String currentFile;
-    private final FileAnalyzer analyzer;
 
     public void enableStartButton() {
         startButton.setEnabled(true);
@@ -53,10 +54,9 @@ public class GUI extends JFrame {
         super("Seminar paralell computing");
         addWindowListener(exitListener);
         this.currentFile = currentFile;
-        this.analyzer = new FileAnalyzer(this);
         this.comp = comp;
         this.launcher = launcher;
-        GUI.this.selectedFileLabel.setText(currentFile);
+        GUI.this.selectInputButton.setText(currentFile);
 
         startButton.addActionListener(new ActionListener() {
 
@@ -75,9 +75,34 @@ public class GUI extends JFrame {
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
-                                GUI.this.analyzer.printHeaderWithIndex(GUI.this.currentFile);
+                                DecimalFormat df = new DecimalFormat("000");
+                                List<String> headers = CSVHandler.getHeaders(GUI.this.currentFile);
+
+                                for(int i = 0; i < headers.size(); i++) {
+                                    GUI.this.println(df.format(i) + " = " + headers.get(i));
+                                }
                             }
                         }).start();
+                    } else if (compareRadioButton.isSelected()) {
+                        File workingDirectory = new File(System.getProperty("user.dir"));
+                        JFileChooser chooser = new JFileChooser();
+                        chooser.setDialogTitle("Compare with");
+                        chooser.setCurrentDirectory(workingDirectory);
+                        FileNameExtensionFilter filter = new FileNameExtensionFilter("CSV Files", "csv");
+                        chooser.setFileFilter(filter);
+                        chooser.setMultiSelectionEnabled(false);
+                        int option = chooser.showOpenDialog(GUI.this);
+
+                        if (option == JFileChooser.APPROVE_OPTION) {
+                            String file = chooser.getSelectedFile().getAbsolutePath();
+                            GUI.this.println("Compare with: " + file);
+//                            Plotter.plot("lulZ", CSVHandler.getDataset());
+//                            GUI.this.currentFile = file;
+                        } else {
+                            GUI.this.println("Canceled");
+                        }
+                    } else {
+                        GUI.this.println("No Action selected");
                     }
                 } else {
                     GUI.this.println("No File selected");
@@ -92,7 +117,7 @@ public class GUI extends JFrame {
                 JFileChooser chooser = new JFileChooser();
                 chooser.setCurrentDirectory(workingDirectory);
                 FileNameExtensionFilter filter = new FileNameExtensionFilter("CSV Files", "csv");
-                chooser.addChoosableFileFilter(filter);
+                chooser.setFileFilter(filter);
                 chooser.setMultiSelectionEnabled(false);
                 int option = chooser.showOpenDialog(GUI.this);
 
@@ -100,7 +125,9 @@ public class GUI extends JFrame {
                     String file = chooser.getSelectedFile().getAbsolutePath();
                     GUI.this.println("Input selected: " + file);
                     GUI.this.currentFile = file;
-                    GUI.this.selectedFileLabel.setText(file);
+                    GUI.this.selectInputButton.setText(file);
+                } else {
+                    GUI.this.println("Canceled");
                 }
             }
         });
