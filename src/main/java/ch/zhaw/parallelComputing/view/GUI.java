@@ -93,7 +93,9 @@ public class GUI extends JFrame {
                                                                    new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z"),
                                                                    new SimpleDateFormat("yyyy-MM-dd-HH.mm"));
                                 it.setLogFileName("Sentiments.csv");
-                                it.setLogFields(Arrays.asList(23, 81, 18,17));
+                                it.setLogFields(Arrays.asList(23, 81, 18, 17));
+                                GUI.this.evaluateRadioButton.setSelected(false);
+                                GUI.this.compareRadioButton.setSelected(true);
                                 GUI.this.comp.start(it);
                             }
                         }).start();
@@ -104,9 +106,15 @@ public class GUI extends JFrame {
                                 DecimalFormat df = new DecimalFormat("000");
                                 List<String> headers = CSVHandler.getHeaders(GUI.this.currentInputFile);
 
+                                SelectMapAttributes dialog = new SelectMapAttributes("EEE, dd MMM yyyy HH:mm:ss Z", "yyyy-MM-dd-HH.mm", headers);
+                                dialog.setLocationRelativeTo(GUI.this);
+                                dialog.pack();
+                                dialog.setVisible(true);
                                 for(int i = 0; i < headers.size(); i++) {
                                     GUI.this.println(df.format(i) + " = " + headers.get(i));
                                 }
+                                GUI.this.showColumnsRadioButton.setSelected(false);
+                                GUI.this.evaluateRadioButton.setSelected(true);
                             }
                         }).start();
                     } else if (compareRadioButton.isSelected()) {
