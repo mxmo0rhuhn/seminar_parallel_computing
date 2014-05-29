@@ -13,68 +13,148 @@ import edu.stanford.nlp.neural.rnn.RNNCoreAnnotations;
 import edu.stanford.nlp.sentiment.SentimentCoreAnnotations;
 import edu.stanford.nlp.trees.Tree;
 import edu.stanford.nlp.util.CoreMap;
+import org.apache.xerces.impl.dv.util.Base64;
 
 import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Properties;
 
 import java.util.logging.Logger;
 
 public class TweetMapper implements MapInstruction {
 
+    /**
+     * Protocol:
+     * [ KEY_ID
+     * , IN Date format
+     * , OUT Date format
+     * , TWEET_ID
+     * , Log name
+     * , [IDs for logging]
+     * , [Header for logging]
+     * , Payload
+     * ]
+     *
+     * If a Log name is given the calculated sentiment will be also logged
+     *
+     *  Sample
+     *  { "81"
+     // Sat, 24 May 2014 11:44:57 +0000
+     *  , new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z")
+     *  , new SimpleDateFormat("yyyy-MM-dd-HH.mm")
+     *  , "18"
+     *  , "Sentiments.csv"
+     *  , ["23", "81", "18"]
+     *  , ["Tweet ID", "Tweet TSD", "Tweet Text"]
+     *  , "CSV"
+     *  }
+     */
+
     private static final Logger LOG = Logger.getLogger(TweetMapper.class.getName());
 
-    private static final int ID_INDEX = 23;
-    private static final int TSD_INDEX = 81;
-    private static final int TWEET_INDEX = 18;
+    private int TSD_INDEX = 0;
+    private SimpleDateFormat dateParser = null;
+    private SimpleDateFormat targetDate = null;
 
-    private static final String OUT_PATH = "Sentiments.csv";
+    private int TWEET_INDEX = 0;
 
-    private static final String IN_DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss Z";
-    private static final String OUT_DATE_FORMAT = "yyyy-MM-dd-HH.mm";
+    private boolean logging = false;
+    private String OUT_PATH = null;
+    private List<Integer> logIDs = null;
+    private List<String> logHeaders = null;
+
+    private String payload = null;
+
     private static final String DEFAULT_OUT_DATE = "0000-00-00-00.00";
-
-    // Sat, 24 May 2014 11:44:57 +0000
-    SimpleDateFormat dateParser = new SimpleDateFormat(IN_DATE_FORMAT);
-    SimpleDateFormat targetDate = new SimpleDateFormat(OUT_DATE_FORMAT);
 
     @Override
     public void map(MapEmitter emitter, String input) {
         LOG.entering(getClass().getName(), "map");
 
         try {
-            CSVWriter writer = new CSVWriter(new FileWriter(OUT_PATH,true));
-            CSVReader reader = new CSVReader(new StringReader(input));
-            String[] entries = { "ID", "TSD", "Tweet", "Sentiment"};
+            parseProtokollFromString(input);
+
+            CSVWriter writer = null;
+            CSVReader reader = new CSVReader(new StringReader(payload));
+
+
+            String[] entries = null;
+            if(logging) {
+                writer = new CSVWriter(new FileWriter(OUT_PATH,true));
+                logHeaders.add("Sentiment");
+                entries = (String[]) logHeaders.toArray();
+                writer.writeNext(entries);
+            }
 
             String [] nextLine;
             while ((nextLine = reader.readNext()) != null) {
-                // ID
-                entries[0] = nextLine[ID_INDEX];
-                // Timestamp
+                String key;
                 try {
-                    entries[1] = targetDate.format(dateParser.parse(nextLine[TSD_INDEX]));
+                    key = targetDate.format(dateParser.parse(nextLine[TSD_INDEX]));
                 } catch (ParseException e) {
-                    entries[1] = DEFAULT_OUT_DATE;
+                    key = DEFAULT_OUT_DATE;
                 }
-                // Sentiment
-                entries[2] = findSentiment(nextLine[TWEET_INDEX]).toString();
-                // Tweet
-                entries[3] = nextLine[TWEET_INDEX];
+                String sentiment = findSentiment(nextLine[TWEET_INDEX]).toString();
 
-                writer.writeNext(entries);
-                emitter.emitIntermediateMapResult(entries[1], entries[2]);
+                if(logging) {
+                    int i = 0;
+                    for(Integer id : logIDs) {
+                       entries[i] = nextLine[id];
+                    }
+                    writer.writeNext(entries);
+                }
+
+                emitter.emitIntermediateMapResult(key, sentiment);
             }
             reader.close();
-            writer.close();
-        } catch (Exception e) {
+
+            if(logging) {
+                writer.close();
+            }
+        } catch (ClassNotFoundException e) {
             e.printStackTrace(System.out);
-            LOG.severe("ERROR in MAP step!!!");
+            LOG.severe("ERROR in MAP step during input parsing");
+        } catch (IOException e) {
+            e.printStackTrace(System.out);
+            LOG.severe("ERROR in MAP step during I/O");
         }
     }
 
-    private Integer findSentiment(String line) throws Exception {
+    /**
+     * Read the object from Base64 string.
+     */
+    private void parseProtokollFromString( String s ) throws IOException , ClassNotFoundException {
+        byte [] data = Base64.decode(s);
+        ObjectInputStream ois = new ObjectInputStream( new ByteArrayInputStream(  data ) );
+        Object[] inputArray  = (Object[]) ois.readObject();
+        ois.close();
+
+        if(inputArray.length != 8) {
+            throw new ClassNotFoundException();
+        }
+
+        TSD_INDEX = (Integer) inputArray[0];
+        dateParser = (SimpleDateFormat) inputArray[1];
+        targetDate = (SimpleDateFormat) inputArray[2];
+
+        TWEET_INDEX = (Integer) inputArray[3];
+
+        OUT_PATH = (String) inputArray[4];
+        logIDs = (List<Integer>) inputArray[5];
+        logHeaders = (List<String>) inputArray[6];
+
+        if(OUT_PATH == null || logIDs == null || logHeaders == null) {
+            logIDs = null;
+            logHeaders = null;
+            logging = false;
+        }
+
+        payload = (String) inputArray[7];
+    }
+
+    private Integer findSentiment(String line) {
 
         Properties props = new Properties();
         props.setProperty("annotators", "tokenize, ssplit, parse, sentiment");

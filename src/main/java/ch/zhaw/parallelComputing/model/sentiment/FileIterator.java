@@ -1,9 +1,10 @@
 package ch.zhaw.parallelComputing.model.sentiment;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import org.apache.mina.util.Base64;
+
+import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.logging.Logger;
 
@@ -77,9 +78,31 @@ public class FileIterator implements Iterator<String> {
                 break;
             }
 		}
-        return toReturn.toString();
-	}
+        Object[] send = new Object[] { 81
+                // Sat, 24 May 2014 11:44:57 +0000
+                  , new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z")
+                  , new SimpleDateFormat("yyyy-MM-dd-HH.mm")
+                  , 18
+                  , "Sentiments.csv"
+                  , Arrays.asList(23, 81, 18)
+              , Arrays.asList("Tweet ID", "Tweet TSD", "Tweet Text")
+              , toReturn.toString()};
 
+        return toString(send);
+	}
+    private String toString( Object o ) {
+        String toReturn = null;
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream( baos );
+            oos.writeObject( o );
+            oos.close();
+            toReturn = new String( Base64.encodeBase64(baos.toByteArray()) );
+        } catch (IOException e) {
+            e.printStackTrace(System.out);
+        }
+        return toReturn;
+    }
 	/**
 	 * Dieser Iterator ist read-only.
 	 */
