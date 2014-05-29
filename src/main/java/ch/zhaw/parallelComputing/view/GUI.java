@@ -28,13 +28,10 @@ public class GUI extends JFrame {
 
     private final ProjectLauncher launcher;
     private final SentimentComputation comp;
-    private String currentFile;
+    private String currentInputFile;
+    private String currentComparisonFile;
 
-    public void enableStartButton() {
-        startButton.setEnabled(true);
-    }
-
-    WindowListener exitListener = new WindowAdapter() {
+    private final WindowListener exitListener = new WindowAdapter() {
 
         @Override
         public void windowClosing(WindowEvent e) {
@@ -42,7 +39,8 @@ public class GUI extends JFrame {
             if(comp.isResults()){
                confirm = 0;
             } else {
-                confirm = JOptionPane.showOptionDialog(GUI.this, "A computation is running - Are You Sure to Close Application?", "Exit Confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+                confirm = JOptionPane.showOptionDialog(GUI.this, "A computation is running - Are You Sure to Close Application?", "Exit Confirmation",
+                                                        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
             }
             if (confirm == 0) {
                 launcher.exit();
@@ -50,25 +48,40 @@ public class GUI extends JFrame {
         }
     };
 
-    public GUI(String currentFile, SentimentComputation comp, ProjectLauncher launcher) {
+    public GUI(String currentInputFile, SentimentComputation comp, ProjectLauncher launcher) {
         super("Seminar paralell computing");
+
         addWindowListener(exitListener);
-        this.currentFile = currentFile;
+        this.currentInputFile = currentInputFile;
         this.comp = comp;
         this.launcher = launcher;
-        GUI.this.selectInputButton.setText(currentFile);
+        this.selectInputButton.setText(currentInputFile);
 
+        setStartButtonListener();
+        setSelectInputButtonListener();
+        setSelectComparisonButtonListener();
+
+        setContentPane(rootPanel);
+        setSize(new Dimension(800, 300));
+        setResizable(false);
+        logArea.setEditable(false);
+        setLocationRelativeTo(null);
+        pack();
+        setVisible(true);
+    }
+
+    private void setStartButtonListener() {
         startButton.addActionListener(new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                if(GUI.this.currentFile != null) {
+                if(GUI.this.currentInputFile != null) {
                     if(evaluateRadioButton.isSelected()) {
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
                                 GUI.this.startButton.setEnabled(false);
-                                GUI.this.comp.start(GUI.this.currentFile);
+                                GUI.this.comp.start(GUI.this.currentInputFile);
                             }
                         }).start();
                     } else if (showColumnsRadioButton.isSelected()) {
@@ -76,7 +89,7 @@ public class GUI extends JFrame {
                             @Override
                             public void run() {
                                 DecimalFormat df = new DecimalFormat("000");
-                                List<String> headers = CSVHandler.getHeaders(GUI.this.currentFile);
+                                List<String> headers = CSVHandler.getHeaders(GUI.this.currentInputFile);
 
                                 for(int i = 0; i < headers.size(); i++) {
                                     GUI.this.println(df.format(i) + " = " + headers.get(i));
@@ -84,64 +97,65 @@ public class GUI extends JFrame {
                             }
                         }).start();
                     } else if (compareRadioButton.isSelected()) {
-                        File workingDirectory = new File(System.getProperty("user.dir"));
-                        JFileChooser chooser = new JFileChooser();
-                        chooser.setDialogTitle("Compare with");
-                        chooser.setCurrentDirectory(workingDirectory);
-                        FileNameExtensionFilter filter = new FileNameExtensionFilter("CSV Files", "csv");
-                        chooser.setFileFilter(filter);
-                        chooser.setMultiSelectionEnabled(false);
-                        int option = chooser.showOpenDialog(GUI.this);
-
-                        if (option == JFileChooser.APPROVE_OPTION) {
-                            String file = chooser.getSelectedFile().getAbsolutePath();
-                            GUI.this.println("Compare with: " + file);
+                        GUI.this.println("Compare with: " + currentComparisonFile );
 //                            Plotter.plot("lulZ", CSVHandler.getDataset());
-//                            GUI.this.currentFile = file;
-                        } else {
-                            GUI.this.println("Canceled");
-                        }
+//                            GUI.this.currentInputFile = file;
                     } else {
-                        GUI.this.println("No Action selected");
+                        GUI.this.println("No action selected");
                     }
                 } else {
-                    GUI.this.println("No File selected");
+                    GUI.this.println("No input file selected");
                 }
             }
         });
+    }
 
+    private void setSelectComparisonButtonListener() {
+        selectCompareButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                String compFile = getCSVFromDialog("Select comparison File");
+                if (compFile != null) {
+                    GUI.this.println("Compare with: " + compFile);
+                    GUI.this.selectCompareButton.setText(compFile);
+                    GUI.this.currentComparisonFile = compFile;
+                } else {
+                    GUI.this.println("Canceled");
+                }
+
+            }
+        });
+    }
+
+    private void setSelectInputButtonListener() {
         selectInputButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                File workingDirectory = new File(System.getProperty("user.dir"));
-                JFileChooser chooser = new JFileChooser();
-                chooser.setCurrentDirectory(workingDirectory);
-                FileNameExtensionFilter filter = new FileNameExtensionFilter("CSV Files", "csv");
-                chooser.setFileFilter(filter);
-                chooser.setMultiSelectionEnabled(false);
-                int option = chooser.showOpenDialog(GUI.this);
-
-                if (option == JFileChooser.APPROVE_OPTION) {
-                    String file = chooser.getSelectedFile().getAbsolutePath();
-                    GUI.this.println("Input selected: " + file);
-                    GUI.this.currentFile = file;
-                    GUI.this.selectInputButton.setText(file);
+                String compFile = getCSVFromDialog("Select input File");
+                if(compFile != null) {
+                    GUI.this.println("Input file: " + compFile);
+                    GUI.this.selectInputButton.setText(compFile);
+                    GUI.this.currentInputFile = compFile;
                 } else {
                     GUI.this.println("Canceled");
                 }
             }
         });
-
-        setContentPane(rootPanel);
-        setSize(new Dimension(800, 300));
-        setResizable(false);
-        setLocationRelativeTo(null);
-        pack();
-        setVisible(true);
     }
 
-    private void createUIComponents() {
-        this.logArea.setEditable(false);
+    private String getCSVFromDialog(String title) {
+        File workingDirectory = new File(System.getProperty("user.dir"));
+        JFileChooser chooser = new JFileChooser(title);
+        chooser.setCurrentDirectory(workingDirectory);
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("CSV Files", "csv");
+        chooser.setFileFilter(filter);
+        chooser.setMultiSelectionEnabled(false);
+        int option = chooser.showOpenDialog(this);
+
+        if (option == JFileChooser.APPROVE_OPTION) {
+            return chooser.getSelectedFile().getAbsolutePath();
+        }
+        return null;
     }
 
     public void println(String line) {
@@ -161,5 +175,9 @@ public class GUI extends JFrame {
                 }
             }
         });
+    }
+
+    public void enableStartButton() {
+        startButton.setEnabled(true);
     }
 }
