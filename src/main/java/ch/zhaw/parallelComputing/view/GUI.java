@@ -2,6 +2,7 @@ package ch.zhaw.parallelComputing.view;
 
 import ch.zhaw.parallelComputing.controller.ProjectLauncher;
 import ch.zhaw.parallelComputing.model.CSVHandler;
+import ch.zhaw.parallelComputing.model.sentiment.FileIterator;
 import ch.zhaw.parallelComputing.model.sentiment.SentimentComputation;
 
 import javax.swing.*;
@@ -10,6 +11,9 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -30,13 +34,14 @@ public class GUI extends JFrame {
     private final SentimentComputation comp;
     private String currentInputFile;
     private String currentComparisonFile;
+    private Long offset = 10L;
 
     private final WindowListener exitListener = new WindowAdapter() {
 
         @Override
         public void windowClosing(WindowEvent e) {
             int confirm = 1;
-            if(comp.isResults()){
+            if(comp.hasResults()){
                confirm = 0;
             } else {
                 confirm = JOptionPane.showOptionDialog(GUI.this, "A computation is running - Are You Sure to Close Application?", "Exit Confirmation",
@@ -81,7 +86,15 @@ public class GUI extends JFrame {
                             @Override
                             public void run() {
                                 GUI.this.startButton.setEnabled(false);
-                                GUI.this.comp.start(GUI.this.currentInputFile);
+                                FileIterator it = new FileIterator(GUI.this.currentInputFile,
+                                                                   GUI.this.offset,
+                                                                   81,
+                                                                   18,
+                                                                   new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z"),
+                                                                   new SimpleDateFormat("yyyy-MM-dd-HH.mm"));
+                                it.setLogFileName("Sentiments.csv");
+                                it.setLogFields(Arrays.asList(23, 81, 18,17));
+                                GUI.this.comp.start(it);
                             }
                         }).start();
                     } else if (showColumnsRadioButton.isSelected()) {

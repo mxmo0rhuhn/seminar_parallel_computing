@@ -4,25 +4,38 @@ import org.apache.mina.util.Base64;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
  * Slices the input file for processing
  * 
- * @author Max
+ * @author Max Schrimpf
  * 
  */
 public class FileIterator implements Iterator<String> {
 
     private static final Logger LOG = Logger.getLogger(FileIterator.class.getName());
+
+    // Mandatory input fields
+    private final BufferedReader reader;
 	//  The size of the slices
 	private final Long offset;
-    private final BufferedReader reader;
+    private final Integer keyID;
+    private final SimpleDateFormat sourceFormat;
+    private final SimpleDateFormat targetFormat;
+    private final Integer tweetID;
+
+    // Optional fields
+    private String logFileName = "Sentiments.csv";
+    private List<Integer> logFields = null;
+
+    // Fields for processing
     private boolean hasNext;
 
-	public FileIterator(String filename, Long offset) {
+	public FileIterator(String filename, Long offset, Integer keyID, Integer tweetID,
+                        SimpleDateFormat sourceFormat, SimpleDateFormat targetFormat) {
         hasNext = true;
         BufferedReader tmp = null;
 		this.offset = offset;
@@ -30,10 +43,15 @@ public class FileIterator implements Iterator<String> {
             tmp = new BufferedReader(new FileReader(filename));
         } catch (FileNotFoundException e) {
             e.printStackTrace(System.out);
-            LOG.severe("ERROR in MAP step!!!");
+            LOG.severe("Can't read input file");
         }
 
-        reader = tmp;
+        this.keyID = keyID;
+        this.tweetID = tweetID;
+        this.sourceFormat = sourceFormat;
+        this.targetFormat = targetFormat;
+        this.reader = tmp;
+
         // read over header line
         testAndGetLine();
     }
@@ -78,16 +96,8 @@ public class FileIterator implements Iterator<String> {
                 break;
             }
 		}
-        Object[] send = new Object[] { 81
-                // Sat, 24 May 2014 11:44:57 +0000
-                  , new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z")
-                  , new SimpleDateFormat("yyyy-MM-dd-HH.mm")
-                  , 18
-                  , "Sentiments.csv"
-                  , Arrays.asList(23, 81, 18)
-              , Arrays.asList("Tweet ID", "Tweet TSD", "Tweet Text")
-              , toReturn.toString()};
-
+        Object[] send = new Object[] { keyID, sourceFormat, targetFormat, tweetID, logFileName, logFields,
+                                        toReturn.toString()};
         return toString(send);
 	}
     private String toString( Object o ) {
@@ -104,10 +114,26 @@ public class FileIterator implements Iterator<String> {
         return toReturn;
     }
 	/**
-	 * Dieser Iterator ist read-only.
+	 * This iterator is read-only.
 	 */
 	@Override
 	public void remove() {
 		throw new UnsupportedOperationException("Iterator is readonly");
 	}
+
+    public String getLogFileName() {
+        return logFileName;
+    }
+
+    public void setLogFileName(String logFileName) {
+        this.logFileName = logFileName;
+    }
+
+    public List<Integer> getLogFields() {
+        return logFields;
+    }
+
+    public void setLogFields(List<Integer> logFields) {
+        this.logFields = logFields;
+    }
 }

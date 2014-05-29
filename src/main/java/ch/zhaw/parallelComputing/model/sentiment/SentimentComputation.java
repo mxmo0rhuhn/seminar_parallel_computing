@@ -3,6 +3,7 @@ package ch.zhaw.parallelComputing.model.sentiment;
 import ch.zhaw.mapreduce.MapReduce;
 import ch.zhaw.mapreduce.MapReduceFactory;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
@@ -14,29 +15,26 @@ import java.util.Observable;
 public class SentimentComputation extends Observable{
 
 	private final MapReduce computer;
-    private final Long offset;
-
-    public boolean isResults() {
-        return results;
-    }
-
     private boolean results;
 
-	public SentimentComputation(Long offset) {
+	public SentimentComputation() {
         results = true;
 		computer = MapReduceFactory.getMapReduce().newMRTask(new TweetMapper() , new DateAvgReducer(), new DateAvgCombiner(), null);
-        this.offset = offset;
 	}
 
-	public void start(String filename) {
+	public void start(Iterator it) {
         results = false;
         super.setChanged();
         super.notifyObservers();
 
-		Map<String, List<String>> result = computer.runMapReduceTask(new FileIterator(filename, offset));
+		Map<String, List<String>> result = computer.runMapReduceTask(it);
 
         results = true;
 	    super.setChanged();
  	    super.notifyObservers(result);
 	}
+
+    public boolean hasResults() {
+        return results;
+    }
 }

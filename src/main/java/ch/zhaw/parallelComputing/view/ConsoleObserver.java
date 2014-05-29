@@ -57,7 +57,7 @@ public class ConsoleObserver implements Observer {
 	@Override
 	public void update(Observable o, Object arg) {
 
-        if(sentimentComputation.isResults()) {
+        if(sentimentComputation.hasResults()) {
             ConsoleObserver.this.activeWindow.enableStartButton();
             Date stopTSD = new Date();
             long difference = stopTSD.getTime() - startTSD.getTime();

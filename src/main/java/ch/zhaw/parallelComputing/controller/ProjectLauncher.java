@@ -51,7 +51,7 @@ public class ProjectLauncher {
 
 		LOG.log(Level.INFO, "SentimentComputation Config: Path={0} Offset={1} Logfile={2} Window={3}", new Object[]{path, offset, logfile, activeWindow});
 		MapReduceFactory.getMapReduce().start();
-        SentimentComputation sentimentComputation = new SentimentComputation(offset);
+        SentimentComputation sentimentComputation = new SentimentComputation();
         GUI gui = null;
 
         if(activeWindow) {
@@ -62,7 +62,7 @@ public class ProjectLauncher {
 		sentimentComputation.addObserver(observer);
 
         if(!activeWindow) {
-            sentimentComputation.start(path);
+//            sentimentComputation.start(offset, path);
             exit();
         }
     }

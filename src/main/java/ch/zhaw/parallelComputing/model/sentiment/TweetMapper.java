@@ -18,6 +18,7 @@ import org.apache.xerces.impl.dv.util.Base64;
 import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -33,7 +34,6 @@ public class TweetMapper implements MapInstruction {
      * , TWEET_ID
      * , Log name
      * , [IDs for logging]
-     * , [Header for logging]
      * , Payload
      * ]
      *
@@ -47,7 +47,6 @@ public class TweetMapper implements MapInstruction {
      *  , "18"
      *  , "Sentiments.csv"
      *  , ["23", "81", "18"]
-     *  , ["Tweet ID", "Tweet TSD", "Tweet Text"]
      *  , "CSV"
      *  }
      */
@@ -63,7 +62,6 @@ public class TweetMapper implements MapInstruction {
     private boolean logging = false;
     private String OUT_PATH = null;
     private List<Integer> logIDs = null;
-    private List<String> logHeaders = null;
 
     private String payload = null;
 
@@ -82,10 +80,9 @@ public class TweetMapper implements MapInstruction {
 
             String[] entries = null;
             if(logging) {
-                writer = new CSVWriter(new FileWriter(OUT_PATH,true));
-                logHeaders.add("Sentiment");
-                entries = (String[]) logHeaders.toArray();
-                writer.writeNext(entries);
+                writer = new CSVWriter(new FileWriter(OUT_PATH, true));
+                // +1 for the sentiment
+                entries = new String[logIDs.size() + 1];
             }
 
             String [] nextLine;
@@ -102,7 +99,9 @@ public class TweetMapper implements MapInstruction {
                     int i = 0;
                     for(Integer id : logIDs) {
                        entries[i] = nextLine[id];
+                        i++;
                     }
+                    entries[i] = sentiment;
                     writer.writeNext(entries);
                 }
 
@@ -131,27 +130,26 @@ public class TweetMapper implements MapInstruction {
         Object[] inputArray  = (Object[]) ois.readObject();
         ois.close();
 
-        if(inputArray.length != 8) {
+        if(inputArray.length != 7) {
             throw new ClassNotFoundException();
         }
 
         TSD_INDEX = (Integer) inputArray[0];
+        TWEET_INDEX = (Integer) inputArray[3];
         dateParser = (SimpleDateFormat) inputArray[1];
         targetDate = (SimpleDateFormat) inputArray[2];
 
-        TWEET_INDEX = (Integer) inputArray[3];
-
         OUT_PATH = (String) inputArray[4];
         logIDs = (List<Integer>) inputArray[5];
-        logHeaders = (List<String>) inputArray[6];
 
-        if(OUT_PATH == null || logIDs == null || logHeaders == null) {
+        if(OUT_PATH == null || logIDs == null ) {
             logIDs = null;
-            logHeaders = null;
             logging = false;
+        } else {
+            logging = true;
         }
 
-        payload = (String) inputArray[7];
+        payload = (String) inputArray[6];
     }
 
     private Integer findSentiment(String line) {
