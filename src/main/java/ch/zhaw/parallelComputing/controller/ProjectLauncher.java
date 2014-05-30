@@ -73,8 +73,10 @@ public class ProjectLauncher {
             activeWindow = Boolean.valueOf(prop.getProperty("window", "" + activeWindow));
 
             partResultPath = prop.getProperty("partResultPath");
-            List<String> strList = Arrays.asList(prop.getProperty("partResultLogIDs"));
-            if (strList != null) {
+            String listAsStr = prop.getProperty("partResultLogIDs");
+
+            if (listAsStr != null) {
+                List<String> strList = Arrays.asList(listAsStr.split("\\s*,\\s*"));
                 partResultLogIDs = new ArrayList<>();
                 for (String s : strList) {
                     partResultLogIDs.add(Integer.valueOf(s));
@@ -84,7 +86,20 @@ public class ProjectLauncher {
             // Properties could not be load - proceed with defaults
         }
 
-        LOG.log(Level.INFO, "SentimentComputation Config: Path={0} Offset={1} Logfile={2} Window={3}", new Object[]{inputPath, offset, logfile, activeWindow});
+        LOG.log(Level.INFO, "SentimentComputation Config: ");
+        LOG.log(Level.INFO, "inputPath = " +  inputPath );
+        LOG.log(Level.INFO, "partResultPath = " + partResultPath);
+        LOG.log(Level.INFO, "outputPath = " + outputPath );
+        LOG.log(Level.INFO, "comparisonPath = " + comparisonPath );
+        LOG.log(Level.INFO, "offset = " + offset );
+        LOG.log(Level.INFO, "inputDateFormat  = "  + inputDateFormat );
+        LOG.log(Level.INFO, "outputDateFormat = " +   outputDateFormat );
+        LOG.log(Level.INFO, "tweetTimestampID = " +   tweetTimestampID );
+        LOG.log(Level.INFO, "tweetTextID = " +   tweetTextID );
+        LOG.log(Level.INFO, "partResultLogIDs = " +   partResultLogIDs );
+        LOG.log(Level.INFO, "activeWindow = " +   activeWindow );
+        LOG.log(Level.INFO, "logfile = " + logfile );
+
         MapReduceFactory.getMapReduce().start();
         SentimentComputation sentimentComputation = new SentimentComputation();
         GUI gui = null;
