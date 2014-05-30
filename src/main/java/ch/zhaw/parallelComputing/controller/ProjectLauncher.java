@@ -107,14 +107,14 @@ public class ProjectLauncher {
         FileIterator it = new FileIterator(offset, tweetTimestampID, tweetTextID, inputDateFormat, outputDateFormat,
                 partResultPath, partResultLogIDs);
         if (activeWindow) {
-            gui = new GUI(it, inputPath, sentimentComputation, this);
+            gui = new GUI(it, inputPath, outputPath, comparisonPath, sentimentComputation, this);
         }
 
         observer = new ConsoleObserver(logfile, sentimentComputation, gui);
         sentimentComputation.addObserver(observer);
 
         if (!activeWindow) {
-            sentimentComputation.start(it);
+            sentimentComputation.start(it, outputPath);
             exit();
         }
     }

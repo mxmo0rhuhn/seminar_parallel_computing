@@ -26,11 +26,13 @@ public class GUI extends JFrame {
     private JButton startButton;
     private JButton selectInputButton;
     private JButton selectCompareButton;
+    private JButton selectResultButton;
 
     private FileIterator iterator;
     private final ProjectLauncher launcher;
     private final SentimentComputation comp;
     private String currentInputFile;
+    private String currentResultFile;
     private String currentComparisonFile;
 
     private final WindowListener exitListener = new WindowAdapter() {
@@ -50,11 +52,14 @@ public class GUI extends JFrame {
         }
     };
 
-    public GUI(FileIterator iterator, String currentInputFile, SentimentComputation comp, ProjectLauncher launcher) {
+    public GUI(FileIterator iterator, String currentInputFile, String currentResultFile, String currentComparisonFile,
+               SentimentComputation comp, ProjectLauncher launcher) {
         super("Seminar paralell computing");
 
         addWindowListener(exitListener);
         this.currentInputFile = currentInputFile;
+        this.currentResultFile = currentResultFile;
+        this.currentComparisonFile = currentComparisonFile;
         this.comp = comp;
         this.launcher = launcher;
         this.iterator = iterator;
@@ -62,6 +67,7 @@ public class GUI extends JFrame {
 
         setStartButtonListener();
         setSelectInputButtonListener();
+        setSelectResultButtonListener();
         setSelectComparisonButtonListener();
 
         setContentPane(rootPanel);
@@ -111,7 +117,7 @@ public class GUI extends JFrame {
                                 GUI.this.evaluateRadioButton.setSelected(false);
                                 GUI.this.compareRadioButton.setSelected(true);
                                 GUI.this.iterator.setFile(currentInputFile);
-                                GUI.this.comp.start(iterator);
+                                GUI.this.comp.start(iterator, currentResultFile);
                             }
                         }).start();
                     } else if (compareRadioButton.isSelected()) {
@@ -128,11 +134,28 @@ public class GUI extends JFrame {
         });
     }
 
+    private void setSelectResultButtonListener() {
+        selectCompareButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                String resultFile = getCSVFromDialog("Select result file");
+                if (resultFile != null) {
+                    GUI.this.println("Write result to: " + resultFile);
+                    GUI.this.selectResultButton.setText(resultFile);
+                    GUI.this.currentResultFile = resultFile;
+                } else {
+                    GUI.this.println("Canceled");
+                }
+
+            }
+        });
+    }
+
     private void setSelectComparisonButtonListener() {
         selectCompareButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                String compFile = getCSVFromDialog("Select comparison File");
+                String compFile = getCSVFromDialog("Select comparison file");
                 if (compFile != null) {
                     GUI.this.println("Compare with: " + compFile);
                     GUI.this.selectCompareButton.setText(compFile);
@@ -149,7 +172,7 @@ public class GUI extends JFrame {
         selectInputButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                String compFile = getCSVFromDialog("Select input File");
+                String compFile = getCSVFromDialog("Select input file");
                 if (compFile != null) {
                     GUI.this.println("Input file: " + compFile);
                     GUI.this.selectInputButton.setText(compFile);

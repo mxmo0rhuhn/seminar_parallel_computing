@@ -5,13 +5,14 @@ import ch.zhaw.parallelComputing.model.sentiment.FileIterator;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
-import javax.swing.text.MaskFormatter;
 import java.awt.*;
 import java.awt.event.*;
-import java.text.ParseException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class SelectMapAttributes extends JDialog {
     private JPanel contentPane;
@@ -144,13 +145,10 @@ public class SelectMapAttributes extends JDialog {
         dateSelector = new JComboBox(possibleFields.toArray());
         textSelector = new JComboBox(possibleFields.toArray());
 
-        MaskFormatter formatter = null;
-        try {
-            formatter = new MaskFormatter("#####");
-        } catch (ParseException e) {
-            // will not happen
-        }
-        offsetField = new JFormattedTextField(formatter);
+        NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.getDefault());
+        DecimalFormat decimalFormat = (DecimalFormat) numberFormat;
+        decimalFormat.setGroupingUsed(false);
+        offsetField = new JFormattedTextField(decimalFormat);
         loggingList = new CheckBoxList();
         logList = loggingList;
     }
