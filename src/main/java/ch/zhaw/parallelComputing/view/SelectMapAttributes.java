@@ -162,7 +162,7 @@ public class SelectMapAttributes extends JDialog {
                         , textSelector.getSelectedIndex(), dateInField.getText(), dateOutField.getText()
                         , logfileNameField.getText(), loggingList.getSelectedBoxes());
             } else {
-                return new FileIterator(Long.parseLong(offsetField.getText()), dateSelector.getSelectedIndex()
+                return new FileIterator(Long.parseLong(offsetField.getText().trim()), dateSelector.getSelectedIndex()
                         , textSelector.getSelectedIndex(), dateInField.getText(), dateOutField.getText());
             }
         }
