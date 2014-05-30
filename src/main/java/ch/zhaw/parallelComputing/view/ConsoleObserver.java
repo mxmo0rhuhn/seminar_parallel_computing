@@ -102,12 +102,12 @@ public class ConsoleObserver implements Observer {
         OutputStream log = new OutputStream() {
             @Override
             public void write(int b) throws IOException {
-                LOG.fine(String.valueOf((char) b));
+                LOG.severe(String.valueOf((char) b));
             }
 
             @Override
             public void write(byte[] b, int off, int len) throws IOException {
-                LOG.fine(new String(b, off, len));
+                LOG.severe(new String(b, off, len));
             }
 
             @Override

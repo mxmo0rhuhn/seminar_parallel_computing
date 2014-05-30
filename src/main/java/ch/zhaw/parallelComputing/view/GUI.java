@@ -110,6 +110,7 @@ public class GUI extends JFrame {
                                 GUI.this.startButton.setEnabled(false);
                                 GUI.this.evaluateRadioButton.setSelected(false);
                                 GUI.this.compareRadioButton.setSelected(true);
+                                GUI.this.iterator.setFile(currentInputFile);
                                 GUI.this.comp.start(iterator);
                             }
                         }).start();

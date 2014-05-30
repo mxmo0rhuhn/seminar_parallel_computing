@@ -38,19 +38,19 @@ public class SelectMapAttributes extends JDialog {
     private SimpleDateFormat dateParser = null;
     private SimpleDateFormat targetDate = null;
 
-    private boolean logging = false;
+    private boolean logging = true;
     private String logFileName = null;
     private List<Integer> logFields;
 
     public SelectMapAttributes(FileIterator iterator, List<String> possibleFields) {
         this.possibleFields = possibleFields;
         logFields = iterator.getLogFields();
-        if(logFields == null) {
+        if (logFields == null) {
             logging = false;
             logFields = new ArrayList<>();
         }
         logFileName = iterator.getLogFileName();
-        if(logFileName == null) {
+        if (logFileName == null) {
             logging = false;
             logFileName = "";
         }
@@ -101,8 +101,8 @@ public class SelectMapAttributes extends JDialog {
     private void fillLoggingList() {
         boolean selected;
         int i = 0;
-        for(String elem : possibleFields) {
-            if(logFields.contains(i)) {
+        for (String elem : possibleFields) {
+            if (logFields.contains(i)) {
                 selected = true;
             } else {
                 selected = false;
@@ -111,20 +111,22 @@ public class SelectMapAttributes extends JDialog {
             i++;
         }
     }
+
     private void onOK() {
 // add your code here
-        if(FileIterator.isValidDateFormat(dateInField.getText())
+        if (FileIterator.isValidDateFormat(dateInField.getText())
                 && FileIterator.isValidDateFormat(dateOutField.getText())) {
             inputSelected = true;
-        dispose();
+            logging = loggingCheckBox.isSelected();
+            dispose();
         } else {
             infoField.setText("Not a valid date format");
-            if(!FileIterator.isValidDateFormat(dateInField.getText())) {
+            if (!FileIterator.isValidDateFormat(dateInField.getText())) {
                 dateInField.setForeground(Color.red);
             } else {
                 dateInField.setForeground(Color.green);
             }
-            if(!FileIterator.isValidDateFormat(dateOutField.getText())) {
+            if (!FileIterator.isValidDateFormat(dateOutField.getText())) {
                 dateOutField.setForeground(Color.red);
             } else {
                 dateOutField.setForeground(Color.green);
@@ -146,7 +148,7 @@ public class SelectMapAttributes extends JDialog {
         try {
             formatter = new MaskFormatter("#####");
         } catch (ParseException e) {
-           // will not happen
+            // will not happen
         }
         offsetField = new JFormattedTextField(formatter);
         loggingList = new CheckBoxList();
@@ -154,20 +156,23 @@ public class SelectMapAttributes extends JDialog {
     }
 
     public FileIterator getIterator() {
-        if(inputSelected == true) {
-           return new FileIterator(Long.parseLong(offsetField.getText()), dateSelector.getSelectedIndex()
-                                   , textSelector.getSelectedIndex(), dateInField.getText() , dateOutField.getText()
-                                   , logfileNameField.getText(), loggingList.getSelectedBoxes());
+        if (inputSelected == true) {
+            if (logging) {
+                return new FileIterator(Long.parseLong(offsetField.getText().trim()), dateSelector.getSelectedIndex()
+                        , textSelector.getSelectedIndex(), dateInField.getText(), dateOutField.getText()
+                        , logfileNameField.getText(), loggingList.getSelectedBoxes());
+            } else {
+                return new FileIterator(Long.parseLong(offsetField.getText()), dateSelector.getSelectedIndex()
+                        , textSelector.getSelectedIndex(), dateInField.getText(), dateOutField.getText());
+            }
         }
         return null;
     }
 
-    private class CheckBoxList extends JList
-    {
+    private class CheckBoxList extends JList {
         protected Border noFocusBorder = new EmptyBorder(1, 1, 1, 1);
 
-        public CheckBoxList()
-        {
+        public CheckBoxList() {
             setCellRenderer(new CellRenderer());
 
             addMouseListener(new MouseAdapter() {
@@ -176,7 +181,7 @@ public class SelectMapAttributes extends JDialog {
 
                     if (index != -1) {
                         JCheckBox checkbox = (JCheckBox) getModel().getElementAt(index);
-                        checkbox.setSelected( !checkbox.isSelected());
+                        checkbox.setSelected(!checkbox.isSelected());
                         repaint();
                     }
                 }
@@ -192,8 +197,8 @@ public class SelectMapAttributes extends JDialog {
             JCheckBox curBox;
             for (int i = 0; i < currentList.getSize(); i++) {
                 curBox = (JCheckBox) currentList.getElementAt(i);
-                if(curBox.isSelected()) {
-                   returnList.add(i);
+                if (curBox.isSelected()) {
+                    returnList.add(i);
                 }
             }
             return returnList;
@@ -209,10 +214,9 @@ public class SelectMapAttributes extends JDialog {
             setListData(newList);
         }
 
-        protected class CellRenderer implements ListCellRenderer
-        {
-            public Component getListCellRendererComponent( JList list, Object value, int index,
-                    boolean isSelected, boolean cellHasFocus) {
+        protected class CellRenderer implements ListCellRenderer {
+            public Component getListCellRendererComponent(JList list, Object value, int index,
+                                                          boolean isSelected, boolean cellHasFocus) {
                 JCheckBox checkbox = (JCheckBox) value;
                 checkbox.setBackground(isSelected ? getSelectionBackground() : getBackground());
                 checkbox.setForeground(isSelected ? getSelectionForeground() : getForeground());
@@ -220,7 +224,7 @@ public class SelectMapAttributes extends JDialog {
                 checkbox.setFont(getFont());
                 checkbox.setFocusPainted(false);
                 checkbox.setBorderPainted(true);
-                checkbox.setBorder(isSelected ? UIManager.getBorder( "List.focusCellHighlightBorder") : noFocusBorder);
+                checkbox.setBorder(isSelected ? UIManager.getBorder("List.focusCellHighlightBorder") : noFocusBorder);
                 return checkbox;
             }
         }
