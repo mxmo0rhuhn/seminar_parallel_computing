@@ -2,11 +2,13 @@ package ch.zhaw.parallelComputing.controller;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import ch.zhaw.parallelComputing.model.sentiment.FileIterator;
 import ch.zhaw.parallelComputing.model.sentiment.SentimentComputation;
 import ch.zhaw.parallelComputing.view.ConsoleObserver;
 import ch.zhaw.mapreduce.MapReduceFactory;
@@ -30,7 +32,11 @@ public class ProjectLauncher {
 	public ProjectLauncher() {
 
         // Input file
-        String path = "raw.csv";
+        String inputPath = "raw.csv";
+        // Output file
+        String outputPath = "raw.csv";
+        // Output file
+        String comparisonPath = "raw.csv";
         // Number of tweets per MAP task
         Long offset = 10L;
         // Default logfile
@@ -41,7 +47,7 @@ public class ProjectLauncher {
         Properties prop = new Properties();
         try {
 			prop.load(new FileInputStream("parallelComputing.properties"));
-            path = prop.getProperty("path", path);
+            inputPath = prop.getProperty("path", inputPath);
             offset = Long.parseLong(prop.getProperty("offset", "" + offset));
             logfile = prop.getProperty("logfile", logfile);
             activeWindow = Boolean.valueOf(prop.getProperty("window", "" + activeWindow));
@@ -49,13 +55,23 @@ public class ProjectLauncher {
 			// Properties could not be load - proceed with defaults
 		}
 
-		LOG.log(Level.INFO, "SentimentComputation Config: Path={0} Offset={1} Logfile={2} Window={3}", new Object[]{path, offset, logfile, activeWindow});
+		LOG.log(Level.INFO, "SentimentComputation Config: Path={0} Offset={1} Logfile={2} Window={3}", new Object[]{inputPath, offset, logfile, activeWindow});
 		MapReduceFactory.getMapReduce().start();
         SentimentComputation sentimentComputation = new SentimentComputation();
         GUI gui = null;
 
+        FileIterator it = new FileIterator(offset,
+        81,
+                18,
+                "EEE, dd MMM yyyy HH:mm:ss Z",
+                "yyyy-MM-dd-HH.mm",
+                "Sentiments.csv",
+                Arrays.asList(23, 81, 18, 17));
+
+
+
         if(activeWindow) {
-            gui = new GUI(path, sentimentComputation, this);
+            gui = new GUI(it, inputPath, sentimentComputation, this);
         }
 
         observer = new ConsoleObserver(logfile, sentimentComputation, gui);

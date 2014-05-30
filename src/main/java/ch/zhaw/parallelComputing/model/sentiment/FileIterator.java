@@ -10,50 +10,59 @@ import java.util.logging.Logger;
 
 /**
  * Slices the input file for processing
- * 
+ *
  * @author Max Schrimpf
- * 
  */
 public class FileIterator implements Iterator<String> {
 
     private static final Logger LOG = Logger.getLogger(FileIterator.class.getName());
 
     // Mandatory input fields
-    private final BufferedReader reader;
-	//  The size of the slices
-	private final Long offset;
+    private final Long offset;
     private final Integer keyID;
     private final SimpleDateFormat sourceFormat;
     private final SimpleDateFormat targetFormat;
     private final Integer tweetID;
 
     // Optional fields
-    private String logFileName = "Sentiments.csv";
-    private List<Integer> logFields = null;
+    private final String logFileName;
+    private final List<Integer> logFields;
 
     // Fields for processing
     private boolean hasNext;
+    private BufferedReader reader;
 
-	public FileIterator(String filename, Long offset, Integer keyID, Integer tweetID,
-                        SimpleDateFormat sourceFormat, SimpleDateFormat targetFormat) {
+    public FileIterator(Long offset, Integer keyID, Integer tweetID,
+                        String sourceFormat, String targetFormat,
+                        String logFileName, List<Integer> logFields) {
+
+        this.logFields = logFields;
+        this.logFileName = logFileName;
+
         hasNext = true;
-        BufferedReader tmp = null;
-		this.offset = offset;
+        this.offset = offset;
+        this.keyID = keyID;
+        this.tweetID = tweetID;
+        this.sourceFormat = new SimpleDateFormat(sourceFormat);
+        this.targetFormat = new SimpleDateFormat(targetFormat);
+    }
+
+    public boolean setFile(String filename) {
         try {
-            tmp = new BufferedReader(new FileReader(filename));
+            reader = new BufferedReader(new FileReader(filename));
+            // read over header line
+            testAndGetLine();
+            return true;
         } catch (FileNotFoundException e) {
             e.printStackTrace(System.out);
             LOG.severe("Can't read input file");
         }
+        return false;
+    }
 
-        this.keyID = keyID;
-        this.tweetID = tweetID;
-        this.sourceFormat = sourceFormat;
-        this.targetFormat = targetFormat;
-        this.reader = tmp;
-
-        // read over header line
-        testAndGetLine();
+    public FileIterator(Long offset, Integer keyID, Integer tweetID,
+                        String sourceFormat, String targetFormat) {
+        this(offset, keyID, tweetID, sourceFormat, targetFormat, null, null);
     }
 
     private String testAndGetLine() {
@@ -78,62 +87,86 @@ public class FileIterator implements Iterator<String> {
         return line;
     }
 
-	@Override
-	public boolean hasNext() {
+    @Override
+    public boolean hasNext() {
         return hasNext;
-	}
+    }
 
-	@Override
-	public String next() {
+    @Override
+    public String next() {
         StringBuilder toReturn = new StringBuilder();
         Long i = 1L;
         String line;
-		while ((line = testAndGetLine()) != null) {
+        while ((line = testAndGetLine()) != null) {
             i++;
             toReturn.append(line);
             toReturn.append(System.getProperty("line.separator"));
             if (i > offset) {
                 break;
             }
-		}
-        Object[] send = new Object[] { keyID, sourceFormat, targetFormat, tweetID, logFileName, logFields,
-                                        toReturn.toString()};
+        }
+        Object[] send = new Object[]{keyID, sourceFormat, targetFormat, tweetID, logFileName, logFields,
+                toReturn.toString()};
         return toString(send);
-	}
-    private String toString( Object o ) {
+    }
+
+    private String toString(Object o) {
         String toReturn = null;
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream( baos );
-            oos.writeObject( o );
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject(o);
             oos.close();
-            toReturn = new String( Base64.encodeBase64(baos.toByteArray()) );
+            toReturn = new String(Base64.encodeBase64(baos.toByteArray()));
         } catch (IOException e) {
             e.printStackTrace(System.out);
         }
         return toReturn;
     }
-	/**
-	 * This iterator is read-only.
-	 */
-	@Override
-	public void remove() {
-		throw new UnsupportedOperationException("Iterator is readonly");
-	}
 
-    public String getLogFileName() {
-        return logFileName;
+    /**
+     * This iterator is read-only.
+     */
+    @Override
+    public void remove() {
+        throw new UnsupportedOperationException("Iterator is readonly");
     }
 
-    public void setLogFileName(String logFileName) {
-        this.logFileName = logFileName;
+    public static boolean isValidDateFormat(String st) {
+        try {
+            new SimpleDateFormat(st);
+            return true;
+        } catch (IllegalArgumentException e) {
+            // invalid pattern
+        }
+        return false;
     }
 
     public List<Integer> getLogFields() {
         return logFields;
     }
 
-    public void setLogFields(List<Integer> logFields) {
-        this.logFields = logFields;
+    public Long getOffset() {
+        return offset;
+    }
+
+    public Integer getKeyID() {
+        return keyID;
+    }
+
+    public String getSourceFormatString() {
+        return sourceFormat.toPattern();
+    }
+
+    public String getTargetFormatString() {
+        return targetFormat.toPattern();
+    }
+
+    public Integer getTweetID() {
+        return tweetID;
+    }
+
+    public String getLogFileName() {
+        return logFileName;
     }
 }

@@ -1,10 +1,15 @@
 package ch.zhaw.parallelComputing.view;
 
+import ch.zhaw.parallelComputing.model.sentiment.FileIterator;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+import javax.swing.text.MaskFormatter;
 import java.awt.*;
 import java.awt.event.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,24 +23,51 @@ public class SelectMapAttributes extends JDialog {
     private JComboBox textSelector;
     private JLabel infoField;
     private JCheckBox loggingCheckBox;
-    private JTextField logfileName;
-    private JPanel loggingArea;
+    private JTextField logfileNameField;
     private JScrollPane loggingPane;
     private JList logList;
+    private JTextField offsetField;
     private CheckBoxList loggingList;
 
     private boolean inputSelected = false;
     private final List<String> possibleFields;
 
-    public SelectMapAttributes(String inFormat, String outFormat, List<String> possibleFields) {
+    private int tsdIndex = 0;
+    private int tweetIndex = 0;
+
+    private SimpleDateFormat dateParser = null;
+    private SimpleDateFormat targetDate = null;
+
+    private boolean logging = false;
+    private String logFileName = null;
+    private List<Integer> logFields;
+
+    public SelectMapAttributes(FileIterator iterator, List<String> possibleFields) {
         this.possibleFields = possibleFields;
+        logFields = iterator.getLogFields();
+        if(logFields == null) {
+            logging = false;
+            logFields = new ArrayList<>();
+        }
+        logFileName = iterator.getLogFileName();
+        if(logFileName == null) {
+            logging = false;
+            logFileName = "";
+        }
+
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
         setTitle("Select MAP configuration");
 
-        dateInField.setText(inFormat);
-        dateOutField.setText(outFormat);
+        dateSelector.setSelectedIndex(iterator.getKeyID());
+        textSelector.setSelectedIndex(iterator.getTweetID());
+        dateInField.setText(iterator.getSourceFormatString());
+        dateOutField.setText(iterator.getTargetFormatString());
+        offsetField.setText(iterator.getOffset().toString());
+        loggingCheckBox.setSelected(logging);
+        logfileNameField.setText(logFileName);
+        fillLoggingList();
 
         buttonOK.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -67,15 +99,37 @@ public class SelectMapAttributes extends JDialog {
     }
 
     private void fillLoggingList() {
-        loggingList = new CheckBoxList();
-
+        boolean selected;
+        int i = 0;
         for(String elem : possibleFields) {
-            loggingList.addCheckbox(new JCheckBox(elem, false));
+            if(logFields.contains(i)) {
+                selected = true;
+            } else {
+                selected = false;
+            }
+            loggingList.addCheckbox(new JCheckBox(elem, selected));
+            i++;
         }
     }
     private void onOK() {
 // add your code here
+        if(FileIterator.isValidDateFormat(dateInField.getText())
+                && FileIterator.isValidDateFormat(dateOutField.getText())) {
+            inputSelected = true;
         dispose();
+        } else {
+            infoField.setText("Not a valid date format");
+            if(!FileIterator.isValidDateFormat(dateInField.getText())) {
+                dateInField.setForeground(Color.red);
+            } else {
+                dateInField.setForeground(Color.green);
+            }
+            if(!FileIterator.isValidDateFormat(dateOutField.getText())) {
+                dateOutField.setForeground(Color.red);
+            } else {
+                dateOutField.setForeground(Color.green);
+            }
+        }
     }
 
     private void onCancel() {
@@ -87,12 +141,25 @@ public class SelectMapAttributes extends JDialog {
     private void createUIComponents() {
         dateSelector = new JComboBox(possibleFields.toArray());
         textSelector = new JComboBox(possibleFields.toArray());
-        fillLoggingList();
+
+        MaskFormatter formatter = null;
+        try {
+            formatter = new MaskFormatter("#####");
+        } catch (ParseException e) {
+           // will not happen
+        }
+        offsetField = new JFormattedTextField(formatter);
+        loggingList = new CheckBoxList();
         logList = loggingList;
     }
 
-    public boolean isInputSelected() {
-        return inputSelected;
+    public FileIterator getIterator() {
+        if(inputSelected == true) {
+           return new FileIterator(Long.parseLong(offsetField.getText()), dateSelector.getSelectedIndex()
+                                   , textSelector.getSelectedIndex(), dateInField.getText() , dateOutField.getText()
+                                   , logfileNameField.getText(), loggingList.getSelectedBoxes());
+        }
+        return null;
     }
 
     private class CheckBoxList extends JList

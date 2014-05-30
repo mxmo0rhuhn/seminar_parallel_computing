@@ -11,9 +11,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -30,22 +27,22 @@ public class GUI extends JFrame {
     private JButton selectInputButton;
     private JButton selectCompareButton;
 
+    private FileIterator iterator;
     private final ProjectLauncher launcher;
     private final SentimentComputation comp;
     private String currentInputFile;
     private String currentComparisonFile;
-    private Long offset = 10L;
 
     private final WindowListener exitListener = new WindowAdapter() {
 
         @Override
         public void windowClosing(WindowEvent e) {
             int confirm = 1;
-            if(comp.hasResults()){
-               confirm = 0;
+            if (comp.hasResults()) {
+                confirm = 0;
             } else {
                 confirm = JOptionPane.showOptionDialog(GUI.this, "A computation is running - Are You Sure to Close Application?", "Exit Confirmation",
-                                                        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+                        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
             }
             if (confirm == 0) {
                 launcher.exit();
@@ -53,13 +50,14 @@ public class GUI extends JFrame {
         }
     };
 
-    public GUI(String currentInputFile, SentimentComputation comp, ProjectLauncher launcher) {
+    public GUI(FileIterator iterator, String currentInputFile, SentimentComputation comp, ProjectLauncher launcher) {
         super("Seminar paralell computing");
 
         addWindowListener(exitListener);
         this.currentInputFile = currentInputFile;
         this.comp = comp;
         this.launcher = launcher;
+        this.iterator = iterator;
         this.selectInputButton.setText(currentInputFile);
 
         setStartButtonListener();
@@ -80,45 +78,43 @@ public class GUI extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                if(GUI.this.currentInputFile != null) {
-                    if(evaluateRadioButton.isSelected()) {
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                GUI.this.startButton.setEnabled(false);
-                                FileIterator it = new FileIterator(GUI.this.currentInputFile,
-                                                                   GUI.this.offset,
-                                                                   81,
-                                                                   18,
-                                                                   new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z"),
-                                                                   new SimpleDateFormat("yyyy-MM-dd-HH.mm"));
-                                it.setLogFileName("Sentiments.csv");
-                                it.setLogFields(Arrays.asList(23, 81, 18, 17));
-                                GUI.this.evaluateRadioButton.setSelected(false);
-                                GUI.this.compareRadioButton.setSelected(true);
-                                GUI.this.comp.start(it);
-                            }
-                        }).start();
-                    } else if (showColumnsRadioButton.isSelected()) {
+                if (GUI.this.currentInputFile != null) {
+                    if (showColumnsRadioButton.isSelected()) {
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
                                 DecimalFormat df = new DecimalFormat("000");
                                 List<String> headers = CSVHandler.getHeaders(GUI.this.currentInputFile);
 
-                                SelectMapAttributes dialog = new SelectMapAttributes("EEE, dd MMM yyyy HH:mm:ss Z", "yyyy-MM-dd-HH.mm", headers);
+                                SelectMapAttributes dialog = new SelectMapAttributes(iterator, headers);
                                 dialog.setLocationRelativeTo(GUI.this);
                                 dialog.pack();
                                 dialog.setVisible(true);
-                                for(int i = 0; i < headers.size(); i++) {
+
+                                FileIterator newIterator = dialog.getIterator();
+                                if(newIterator != null) {
+                                   iterator = newIterator;
+                                }
+                                for (int i = 0; i < headers.size(); i++) {
                                     GUI.this.println(df.format(i) + " = " + headers.get(i));
                                 }
+
                                 GUI.this.showColumnsRadioButton.setSelected(false);
                                 GUI.this.evaluateRadioButton.setSelected(true);
                             }
                         }).start();
+                    } else if (evaluateRadioButton.isSelected()) {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                GUI.this.startButton.setEnabled(false);
+                                GUI.this.evaluateRadioButton.setSelected(false);
+                                GUI.this.compareRadioButton.setSelected(true);
+                                GUI.this.comp.start(iterator);
+                            }
+                        }).start();
                     } else if (compareRadioButton.isSelected()) {
-                        GUI.this.println("Compare with: " + currentComparisonFile );
+                        GUI.this.println("Compare with: " + currentComparisonFile);
 //                            Plotter.plot("lulZ", CSVHandler.getDataset());
 //                            GUI.this.currentInputFile = file;
                     } else {
@@ -153,7 +149,7 @@ public class GUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 String compFile = getCSVFromDialog("Select input File");
-                if(compFile != null) {
+                if (compFile != null) {
                     GUI.this.println("Input file: " + compFile);
                     GUI.this.selectInputButton.setText(compFile);
                     GUI.this.currentInputFile = compFile;
@@ -183,7 +179,7 @@ public class GUI extends JFrame {
         println(line, true);
     }
 
-    public void println(final String text, final boolean newline){
+    public void println(final String text, final boolean newline) {
         SwingUtilities.invokeLater(new Runnable() {
 
             /** {@inheritDoc} */
