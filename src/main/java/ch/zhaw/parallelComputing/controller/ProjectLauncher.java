@@ -1,13 +1,16 @@
 package ch.zhaw.parallelComputing.controller;
 
 import ch.zhaw.mapreduce.MapReduceFactory;
+import ch.zhaw.parallelComputing.model.CSVHandler;
 import ch.zhaw.parallelComputing.model.sentiment.FileIterator;
 import ch.zhaw.parallelComputing.model.sentiment.SentimentComputation;
 import ch.zhaw.parallelComputing.view.ConsoleObserver;
 import ch.zhaw.parallelComputing.view.GUI;
+import ch.zhaw.parallelComputing.view.Plotter;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,6 +46,7 @@ public class ProjectLauncher {
 
         String inputDateFormat = "EEE, dd MMM yyyy HH:mm:ss Z";
         String outputDateFormat = "yyyy-MM-dd-HH.mm";
+        String comparisonDateFormat = "yyyy-MM-dd";
 
         // ID of the key of the MAP job
         int tweetTimestampID = 81;
@@ -66,6 +70,7 @@ public class ProjectLauncher {
             comparisonPath = prop.getProperty("comparisonPath", comparisonPath);
             inputDateFormat = prop.getProperty("inputDateFormat", inputDateFormat);
             outputDateFormat = prop.getProperty("outputDateFormat", outputDateFormat);
+            comparisonDateFormat = prop.getProperty("comparisonDateFormat", comparisonDateFormat);
             offset = Long.parseLong(prop.getProperty("offset", "" + offset));
             tweetTimestampID = Integer.parseInt(prop.getProperty("tweetTimestampID", "" + tweetTimestampID));
             tweetTextID = Integer.parseInt(prop.getProperty("tweetTextID", "" + tweetTextID));
@@ -94,6 +99,7 @@ public class ProjectLauncher {
         LOG.log(Level.INFO, "offset = " + offset );
         LOG.log(Level.INFO, "inputDateFormat  = "  + inputDateFormat );
         LOG.log(Level.INFO, "outputDateFormat = " +   outputDateFormat );
+        LOG.log(Level.INFO, "comparisonDateFormat = " +   comparisonDateFormat );
         LOG.log(Level.INFO, "tweetTimestampID = " +   tweetTimestampID );
         LOG.log(Level.INFO, "tweetTextID = " +   tweetTextID );
         LOG.log(Level.INFO, "partResultLogIDs = " +   partResultLogIDs );
@@ -107,7 +113,7 @@ public class ProjectLauncher {
         FileIterator it = new FileIterator(offset, tweetTimestampID, tweetTextID, inputDateFormat, outputDateFormat,
                 partResultPath, partResultLogIDs);
         if (activeWindow) {
-            gui = new GUI(it, inputPath, outputPath, comparisonPath, sentimentComputation, this);
+            gui = new GUI(it, inputPath, outputPath, comparisonPath, comparisonDateFormat, sentimentComputation, this);
         }
 
         observer = new ConsoleObserver(logfile, sentimentComputation, gui);
@@ -115,6 +121,9 @@ public class ProjectLauncher {
 
         if (!activeWindow) {
             sentimentComputation.start(it, outputPath);
+            Plotter.plot(null, "Comparison",
+                    CSVHandler.getDataset(outputPath, new SimpleDateFormat(outputDateFormat)),
+                    CSVHandler.getDataset(comparisonPath, new SimpleDateFormat(comparisonDateFormat)));
             exit();
         }
     }

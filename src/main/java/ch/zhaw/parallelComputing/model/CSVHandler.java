@@ -40,11 +40,14 @@ public class CSVHandler {
 
             // HEADER
             nextLine = reader.readNext();
+
             while ((nextLine = reader.readNext()) != null) {
                 // Timestamp
                 try {
                     Date tsd = timeFormat.parse(nextLine[0]);
                     Float content = Float.parseFloat(nextLine[1]);
+                    System.out.println("tsd = "+ tsd );
+                    System.out.println("content = "+ content );
                     s2.add(new FixedMillisecond(tsd), content);
                 } catch (ParseException e) {
                     e.printStackTrace(System.out);

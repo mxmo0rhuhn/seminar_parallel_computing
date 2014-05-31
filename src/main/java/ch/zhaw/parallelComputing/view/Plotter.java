@@ -27,10 +27,10 @@ public class Plotter {
     public static void main(String[] args) {
         XYDataset dataset1 = createDataset();
         XYDataset dataset2 = createDataset2();
-        new Plotter().plot("Test", dataset1, dataset2);
+        new Plotter().plot(null, "Test", dataset1, dataset2);
     }
 
-    public static void plot(String title, XYDataset dataset1, XYDataset dataset2) {
+    public static void plot(Component parent, String title, XYDataset dataset1, XYDataset dataset2) {
 
         JFreeChart chart = ChartFactory.createTimeSeriesChart(
                 "Comparison",           // title
@@ -57,14 +57,13 @@ public class Plotter {
         renderer.setBaseShapesVisible(false);
         plot.setRenderer(1, renderer);
 
-
         ChartPanel chartPanel = new ChartPanel(chart);
         chartPanel.setPreferredSize(new java.awt.Dimension(1024, 768));
         chartPanel.setMouseZoomable(true, false);
 
         String[] options = {"Print" , "OK"};
         int response = JOptionPane.showOptionDialog(
-                null                       // Center in window.
+                parent                       // Center in window.
                 , chartPanel
                 , title                      // Title in titlebar
                 , JOptionPane.YES_NO_OPTION  // Option type

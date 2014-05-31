@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class SelectMapAttributes extends JDialog {
+public class MapAttributesDialog extends JDialog {
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
@@ -43,7 +43,7 @@ public class SelectMapAttributes extends JDialog {
     private String logFileName = null;
     private List<Integer> logFields;
 
-    public SelectMapAttributes(FileIterator iterator, List<String> possibleFields) {
+    public MapAttributesDialog(FileIterator iterator, List<String> possibleFields) {
         this.possibleFields = possibleFields;
         logFields = iterator.getLogFields();
         if (logFields == null) {

@@ -35,6 +35,8 @@ public class GUI extends JFrame {
     private String currentResultFile;
     private String currentComparisonFile;
 
+    private String getCurrentComparisonFileDateFormat;
+
     private final WindowListener exitListener = new WindowAdapter() {
 
         @Override
@@ -53,7 +55,7 @@ public class GUI extends JFrame {
     };
 
     public GUI(FileIterator iterator, String currentInputFile, String currentResultFile, String currentComparisonFile,
-               SentimentComputation comp, ProjectLauncher launcher) {
+               String comparisonFileDateFormat, SentimentComputation comp, ProjectLauncher launcher) {
         super("Seminar paralell computing");
 
         addWindowListener(exitListener);
@@ -64,6 +66,9 @@ public class GUI extends JFrame {
         this.launcher = launcher;
         this.iterator = iterator;
         this.selectInputButton.setText(currentInputFile);
+        this.selectResultButton.setText(currentResultFile);
+        this.selectCompareButton.setText(currentComparisonFile);
+        this.getCurrentComparisonFileDateFormat = comparisonFileDateFormat;
 
         setStartButtonListener();
         setSelectInputButtonListener();
@@ -92,14 +97,14 @@ public class GUI extends JFrame {
                                 DecimalFormat df = new DecimalFormat("000");
                                 List<String> headers = CSVHandler.getHeaders(GUI.this.currentInputFile);
 
-                                SelectMapAttributes dialog = new SelectMapAttributes(iterator, headers);
+                                MapAttributesDialog dialog = new MapAttributesDialog(iterator, headers);
                                 dialog.setLocationRelativeTo(GUI.this);
                                 dialog.pack();
                                 dialog.setVisible(true);
 
                                 FileIterator newIterator = dialog.getIterator();
-                                if(newIterator != null) {
-                                   iterator = newIterator;
+                                if (newIterator != null) {
+                                    iterator = newIterator;
                                 }
                                 for (int i = 0; i < headers.size(); i++) {
                                     GUI.this.println(df.format(i) + " = " + headers.get(i));
@@ -121,11 +126,21 @@ public class GUI extends JFrame {
                             }
                         }).start();
                     } else if (compareRadioButton.isSelected()) {
-                        GUI.this.println("Compare with: " + currentComparisonFile);
-//                            Plotter.plot("lulZ", CSVHandler.getDataset());
-//                            GUI.this.currentInputFile = file;
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                GUI.this.println("Compare with: " + currentComparisonFile);
+
+                                ComparisonDialog dialog = new ComparisonDialog(GUI.this,
+                                                            currentResultFile, iterator.getTargetFormatString(),
+                                                            currentComparisonFile, getCurrentComparisonFileDateFormat);
+                                dialog.pack();
+                                dialog.setVisible(true);
+                            }
+                        }).start();
                     } else {
                         GUI.this.println("No action selected");
+
                     }
                 } else {
                     GUI.this.println("No input file selected");
@@ -135,7 +150,7 @@ public class GUI extends JFrame {
     }
 
     private void setSelectResultButtonListener() {
-        selectCompareButton.addActionListener(new ActionListener() {
+        selectResultButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 String resultFile = getCSVFromDialog("Select result file");
@@ -221,4 +236,9 @@ public class GUI extends JFrame {
     public void enableStartButton() {
         startButton.setEnabled(true);
     }
+
+    public void setGetCurrentComparisonFileDateFormat(String getCurrentComparisonFileDateFormat) {
+        this.getCurrentComparisonFileDateFormat = getCurrentComparisonFileDateFormat;
+    }
+
 }
