@@ -17,9 +17,6 @@
  * along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- *
- */
 package ch.zhaw.parallelComputing.view;
 
 import ch.zhaw.parallelComputing.model.sentiment.SentimentComputation;
@@ -32,9 +29,10 @@ import java.util.*;
 import java.util.logging.Logger;
 
 /**
- * Some logging while the sentimentComputation is running
+ * Logging for the sentiment computation MAP REDUCE task. Loggs the System streams into a file and optionally into a
+ * GUI. Exceptions are redirected into the SEVERE LOG.
  *
- * @author Max
+ * @author Max Schrimpf
  */
 public class ConsoleObserver implements Observer {
 

@@ -35,9 +35,10 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Created by Max Schrimpf
+ * Wrapper for the plotting library.
+ *
+ * @author  Max Schrimpf
  */
-
 public class Plotter {
 
     public static void plot(Component parent, String title, XYDataset dataset1, XYDataset dataset2) {

@@ -33,7 +33,9 @@ import java.text.DecimalFormat;
 import java.util.List;
 
 /**
- * Created by Max Schrimpf
+ * GUI of the application. Controls the workflow and displays the dialogs for all needed user interactions.
+ *
+ * @author Max Schrimpf
  */
 public class GUI extends JFrame {
     private JPanel rootPanel;

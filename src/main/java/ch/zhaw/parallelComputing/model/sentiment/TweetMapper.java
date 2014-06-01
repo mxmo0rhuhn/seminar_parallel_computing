@@ -39,6 +39,14 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
 
+/**
+ * The TweetMapper is a MAP instruction that extracts sentiments out of a CSV String and optionally logs the part results
+ * into another csv file. A protocol in the input gives some information about the column that contains the text that
+ * shall be analyzed, the columns that may be logged, the name of the logging file, the column of the timestamp that is
+ * used as Key For the sentiment result and the timestamps source and target format.
+ *
+ * @author Max Schrimpf
+ */
 public class TweetMapper implements MapInstruction {
 
     /**

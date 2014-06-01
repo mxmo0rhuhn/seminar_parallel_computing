@@ -26,6 +26,11 @@ import ch.zhaw.mapreduce.ReduceInstruction;
 import java.util.Iterator;
 import java.util.logging.Logger;
 
+/**
+ * Reduce step - combines the data for each unique key (time).
+ *
+ * Created by Max Schrimpf
+ */
 public class DateAvgReducer implements ReduceInstruction {
     private static final Logger LOG = Logger.getLogger(DateAvgReducer.class.getName());
 

@@ -34,9 +34,9 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Helper Methods in CSV File Handling
- * <p/>
- * Created by Max Schrimpf
+ * Helper Methods for CSV File Handling
+ *
+ * @author Max Schrimpf
  */
 public class CSVHandler {
 
@@ -81,6 +81,12 @@ public class CSVHandler {
         return dataset;
     }
 
+    /**
+     * Rerurnes the first row of the CSV file as a list
+     *
+     * @param input The filename
+     * @return A list of column names
+     */
     public static List<String> getHeaders(String input) {
         List<String> returnList = new ArrayList<>();
         try {

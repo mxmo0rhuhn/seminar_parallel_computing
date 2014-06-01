@@ -33,6 +33,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * A configuration dialog that returns a File iterator if all given information are valid.
+ *
+ * @author Max Schrimpf
+ */
 public class MapAttributesDialog extends JDialog {
     private JPanel contentPane;
     private JButton buttonOK;

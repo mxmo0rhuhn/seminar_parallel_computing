@@ -28,7 +28,9 @@ import java.util.List;
 import java.util.logging.Logger;
 
 /**
- * Slices the input file for processing
+ * Slices the input file for processing.
+ * The Iterator also contains all information that is needed for the MAP step and is responsible for the packaging
+ * of them into the MAP jobs input.
  *
  * @author Max Schrimpf
  */

@@ -26,7 +26,10 @@ import java.util.*;
 import java.util.logging.Logger;
 
 /**
- * Created by Max
+ * Combiner step to reduce the amount of data send from each map task to the master after execution.
+ * Combines the data for each unique key (time).
+ *
+ * Created by Max Schrimpf
  */
 public class DateAvgCombiner implements CombinerInstruction {
 

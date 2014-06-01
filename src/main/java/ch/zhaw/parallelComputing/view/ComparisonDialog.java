@@ -27,6 +27,11 @@ import java.awt.*;
 import java.awt.event.*;
 import java.text.SimpleDateFormat;
 
+/**
+ * Dialog for all needed options to run a plotting job.
+ *
+ * @author Max Schrimpf
+ */
 public class ComparisonDialog extends JDialog {
     private JPanel contentPane;
     private JButton buttonOK;

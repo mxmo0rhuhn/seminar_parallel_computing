@@ -36,9 +36,10 @@ import java.util.logging.Logger;
 
 
 /**
- * This class is starting the map-reduce application
+ * Provides the entrance point for the application.
+ * Reads the configuration and launches either the GUI or executes the program without GUI
  *
- * @author Max
+ * @author Max Schrimpf
  */
 public class ProjectLauncher {
 

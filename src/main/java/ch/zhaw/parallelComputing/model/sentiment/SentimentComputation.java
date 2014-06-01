@@ -31,7 +31,10 @@ import java.util.Map;
 import java.util.Observable;
 
 /**
- * @author Max
+ * The SentimentComputation is a wrapper around the MAP REDUCE interface and handles all steps of a the MAP REDUCE
+ * for sentiment analysis including being observable for GUIs.
+ *
+ * @author Max Schrimpf
  */
 public class SentimentComputation extends Observable {
 
