@@ -27,6 +27,7 @@ import ch.zhaw.parallelComputing.view.ConsoleObserver;
 import ch.zhaw.parallelComputing.view.GUI;
 import ch.zhaw.parallelComputing.view.Plotter;
 
+import javax.swing.*;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -129,6 +130,13 @@ public class ProjectLauncher {
         FileIterator it = new FileIterator(offset, tweetTimestampID, tweetTextID, inputDateFormat, outputDateFormat,
                 partResultPath, partResultLogIDs);
         if (activeWindow) {
+            try {
+                UIManager
+                        .setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+            } catch (ClassNotFoundException | InstantiationException
+                    | IllegalAccessException | UnsupportedLookAndFeelException e) {
+                // not important
+            }
             gui = new GUI(it, inputPath, outputPath, comparisonPath, comparisonDateFormat, sentimentComputation, this);
         }
 

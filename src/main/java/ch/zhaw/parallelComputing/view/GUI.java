@@ -100,8 +100,8 @@ public class GUI extends JFrame {
         setSize(new Dimension(800, 300));
         setResizable(false);
         logArea.setEditable(false);
-        setLocationRelativeTo(null);
         pack();
+        setLocationRelativeTo(null);
         setVisible(true);
     }
 
@@ -118,10 +118,7 @@ public class GUI extends JFrame {
                                 DecimalFormat df = new DecimalFormat("000");
                                 List<String> headers = CSVHandler.getHeaders(GUI.this.currentInputFile);
 
-                                MapAttributesDialog dialog = new MapAttributesDialog(iterator, headers);
-                                dialog.setLocationRelativeTo(GUI.this);
-                                dialog.pack();
-                                dialog.setVisible(true);
+                                MapAttributesDialog dialog = new MapAttributesDialog(GUI.this, iterator, headers);
 
                                 FileIterator newIterator = dialog.getIterator();
                                 if (newIterator != null) {
@@ -155,8 +152,6 @@ public class GUI extends JFrame {
                                 ComparisonDialog dialog = new ComparisonDialog(GUI.this,
                                         currentResultFile, iterator.getTargetFormatString(),
                                         currentComparisonFile, getCurrentComparisonFileDateFormat);
-                                dialog.pack();
-                                dialog.setVisible(true);
                             }
                         }).start();
                     } else {

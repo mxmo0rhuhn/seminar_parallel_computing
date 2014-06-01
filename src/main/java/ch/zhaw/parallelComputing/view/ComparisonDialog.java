@@ -56,7 +56,6 @@ public class ComparisonDialog extends JDialog {
         this.comparisonFileFormatString = comparisonFileFormatString;
         this.parent = parent;
 
-        setLocationRelativeTo(parent);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
 
@@ -88,7 +87,12 @@ public class ComparisonDialog extends JDialog {
             public void actionPerformed(ActionEvent e) {
                 onCancel();
             }
+
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+
+        pack();
+        setLocationRelativeTo(parent);
+        setVisible(true);
     }
 
     private void onOK() {

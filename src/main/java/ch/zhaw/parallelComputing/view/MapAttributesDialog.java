@@ -67,7 +67,7 @@ public class MapAttributesDialog extends JDialog {
     private String logFileName = null;
     private List<Integer> logFields;
 
-    public MapAttributesDialog(FileIterator iterator, List<String> possibleFields) {
+    public MapAttributesDialog(Component parent, FileIterator iterator, List<String> possibleFields) {
         this.possibleFields = possibleFields;
         logFields = iterator.getLogFields();
         if (logFields == null) {
@@ -121,6 +121,9 @@ public class MapAttributesDialog extends JDialog {
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
+        pack();
+        setLocationRelativeTo(parent);
+        setVisible(true);
     }
 
     private void fillLoggingList() {
