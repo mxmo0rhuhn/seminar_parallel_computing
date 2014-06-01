@@ -136,6 +136,7 @@ public class ProjectLauncher {
         sentimentComputation.addObserver(observer);
 
         if (!activeWindow) {
+            it.setFile(inputPath);
             sentimentComputation.start(it, outputPath);
             Plotter.getPlotAsPNG("Comparison",
                     CSVHandler.getDataset(outputPath, new SimpleDateFormat(outputDateFormat)),
