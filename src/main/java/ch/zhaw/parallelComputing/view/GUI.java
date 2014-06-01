@@ -103,6 +103,8 @@ public class GUI extends JFrame {
         pack();
         setLocationRelativeTo(null);
         setVisible(true);
+        getRootPane().setDefaultButton(startButton);
+        startButton.requestFocus();
     }
 
     private void setStartButtonListener() {
