@@ -79,8 +79,8 @@ public class ComparisonDialog extends JDialog {
             }
 
             Plotter.plot(parent, "Comparison",
-                    CSVHandler.getDataset(resultFile, new SimpleDateFormat(resultFileFormatString)),
-                    CSVHandler.getDataset(comparisonFile, new SimpleDateFormat(comparisonFileFormatString)));
+                    CSVHandler.getDataset(comparisonFile, new SimpleDateFormat(comparisonFileFormatString)),
+            CSVHandler.getDataset(resultFile, new SimpleDateFormat(resultFileFormatString)));
             dispose();
         } else {
             infoLabel.setText("Not a valid date format");

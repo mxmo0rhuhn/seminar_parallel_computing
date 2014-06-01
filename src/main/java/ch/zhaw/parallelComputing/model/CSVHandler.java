@@ -2,6 +2,7 @@ package ch.zhaw.parallelComputing.model;
 
 import au.com.bytecode.opencsv.CSVReader;
 import org.jfree.data.time.FixedMillisecond;
+import org.jfree.data.time.Second;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
@@ -30,7 +31,7 @@ public class CSVHandler {
      * @return A Dataset containing the values of the CSV
      */
     public static XYDataset getDataset(String filename, SimpleDateFormat timeFormat) {
-        TimeSeries s2 = new TimeSeries(filename);
+        TimeSeries s2 = new TimeSeries(filename, "Domain", "Range", FixedMillisecond.class);
         TimeSeriesCollection dataset = new TimeSeriesCollection();
 
         try {
@@ -46,8 +47,6 @@ public class CSVHandler {
                 try {
                     Date tsd = timeFormat.parse(nextLine[0]);
                     Float content = Float.parseFloat(nextLine[1]);
-                    System.out.println("tsd = "+ tsd );
-                    System.out.println("content = "+ content );
                     s2.add(new FixedMillisecond(tsd), content);
                 } catch (ParseException e) {
                     e.printStackTrace(System.out);
