@@ -1,15 +1,32 @@
-package ch.zhaw.parallelComputing.model.sentiment;
+/*
+ * Copyright (c) 2014 Max Schrimpf
+ *
+ * This file is part of the parallel computing term paper for the Zurich university of applied sciences.
+ *
+ * It is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * The program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
-import ch.zhaw.mapreduce.MapEmitter;
-import ch.zhaw.mapreduce.MapInstruction;
+package ch.zhaw.parallelComputing.model.sentiment;
 
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
-
+import ch.zhaw.mapreduce.MapEmitter;
+import ch.zhaw.mapreduce.MapInstruction;
 import edu.stanford.nlp.ling.CoreAnnotations;
+import edu.stanford.nlp.neural.rnn.RNNCoreAnnotations;
 import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
-import edu.stanford.nlp.neural.rnn.RNNCoreAnnotations;
 import edu.stanford.nlp.sentiment.SentimentCoreAnnotations;
 import edu.stanford.nlp.trees.Tree;
 import edu.stanford.nlp.util.CoreMap;
@@ -18,10 +35,8 @@ import org.apache.xerces.impl.dv.util.Base64;
 import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
-
 import java.util.logging.Logger;
 
 public class TweetMapper implements MapInstruction {
@@ -36,19 +51,19 @@ public class TweetMapper implements MapInstruction {
      * , [IDs for logging]
      * , Payload
      * ]
-     *
+     * <p/>
      * If a Log name is given the calculated sentiment will be also logged
-     *
-     *  Sample
-     *  { "81"
-     // Sat, 24 May 2014 11:44:57 +0000
-     *  , new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z")
-     *  , new SimpleDateFormat("yyyy-MM-dd-HH.mm")
-     *  , "18"
-     *  , "Sentiments.csv"
-     *  , ["23", "81", "18"]
-     *  , "CSV"
-     *  }
+     * <p/>
+     * Sample
+     * { "81"
+     * // Sat, 24 May 2014 11:44:57 +0000
+     * , new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z")
+     * , new SimpleDateFormat("yyyy-MM-dd-HH.mm")
+     * , "18"
+     * , "Sentiments.csv"
+     * , ["23", "81", "18"]
+     * , "CSV"
+     * }
      */
 
     private static final Logger LOG = Logger.getLogger(TweetMapper.class.getName());
@@ -79,13 +94,13 @@ public class TweetMapper implements MapInstruction {
 
 
             String[] entries = null;
-            if(logging) {
+            if (logging) {
                 writer = new CSVWriter(new FileWriter(OUT_PATH, true));
                 // +1 for the sentiment
                 entries = new String[logIDs.size() + 1];
             }
 
-            String [] nextLine;
+            String[] nextLine;
             while ((nextLine = reader.readNext()) != null) {
                 String key;
                 try {
@@ -95,10 +110,10 @@ public class TweetMapper implements MapInstruction {
                 }
                 String sentiment = findSentiment(nextLine[TWEET_INDEX]).toString();
 
-                if(logging) {
+                if (logging) {
                     int i = 0;
-                    for(Integer id : logIDs) {
-                       entries[i] = nextLine[id];
+                    for (Integer id : logIDs) {
+                        entries[i] = nextLine[id];
                         i++;
                     }
                     entries[i] = sentiment;
@@ -109,7 +124,7 @@ public class TweetMapper implements MapInstruction {
             }
             reader.close();
 
-            if(logging) {
+            if (logging) {
                 writer.close();
             }
         } catch (ClassNotFoundException e) {
@@ -124,13 +139,13 @@ public class TweetMapper implements MapInstruction {
     /**
      * Read the object from Base64 string.
      */
-    private void parseProtokollFromString( String s ) throws IOException , ClassNotFoundException {
-        byte [] data = Base64.decode(s);
-        ObjectInputStream ois = new ObjectInputStream( new ByteArrayInputStream(  data ) );
-        Object[] inputArray  = (Object[]) ois.readObject();
+    private void parseProtokollFromString(String s) throws IOException, ClassNotFoundException {
+        byte[] data = Base64.decode(s);
+        ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));
+        Object[] inputArray = (Object[]) ois.readObject();
         ois.close();
 
-        if(inputArray.length != 7) {
+        if (inputArray.length != 7) {
             throw new ClassNotFoundException();
         }
 
@@ -142,7 +157,7 @@ public class TweetMapper implements MapInstruction {
         OUT_PATH = (String) inputArray[4];
         logIDs = (List<Integer>) inputArray[5];
 
-        if(OUT_PATH == null || logIDs == null ) {
+        if (OUT_PATH == null || logIDs == null) {
             logIDs = null;
             logging = false;
         } else {

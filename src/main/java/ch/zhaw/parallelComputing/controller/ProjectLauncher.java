@@ -1,3 +1,22 @@
+/*
+ * Copyright (c) 2014 Max Schrimpf
+ *
+ * This file is part of the parallel computing term paper for the Zurich university of applied sciences.
+ *
+ * It is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * The program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package ch.zhaw.parallelComputing.controller;
 
 import ch.zhaw.mapreduce.MapReduceFactory;
@@ -25,10 +44,6 @@ public class ProjectLauncher {
 
     private static final Logger LOG = Logger.getLogger(ProjectLauncher.class.getName());
     private final ConsoleObserver observer;
-
-    public static void main(String[] args) {
-        new ProjectLauncher();
-    }
 
     public ProjectLauncher() {
 
@@ -92,19 +107,19 @@ public class ProjectLauncher {
         }
 
         LOG.log(Level.INFO, "SentimentComputation Config: ");
-        LOG.log(Level.INFO, "inputPath = " +  inputPath );
+        LOG.log(Level.INFO, "inputPath = " + inputPath);
         LOG.log(Level.INFO, "partResultPath = " + partResultPath);
-        LOG.log(Level.INFO, "outputPath = " + outputPath );
-        LOG.log(Level.INFO, "comparisonPath = " + comparisonPath );
-        LOG.log(Level.INFO, "offset = " + offset );
-        LOG.log(Level.INFO, "inputDateFormat  = "  + inputDateFormat );
-        LOG.log(Level.INFO, "outputDateFormat = " +   outputDateFormat );
-        LOG.log(Level.INFO, "comparisonDateFormat = " +   comparisonDateFormat );
-        LOG.log(Level.INFO, "tweetTimestampID = " +   tweetTimestampID );
-        LOG.log(Level.INFO, "tweetTextID = " +   tweetTextID );
-        LOG.log(Level.INFO, "partResultLogIDs = " +   partResultLogIDs );
-        LOG.log(Level.INFO, "activeWindow = " +   activeWindow );
-        LOG.log(Level.INFO, "logfile = " + logfile );
+        LOG.log(Level.INFO, "outputPath = " + outputPath);
+        LOG.log(Level.INFO, "comparisonPath = " + comparisonPath);
+        LOG.log(Level.INFO, "offset = " + offset);
+        LOG.log(Level.INFO, "inputDateFormat  = " + inputDateFormat);
+        LOG.log(Level.INFO, "outputDateFormat = " + outputDateFormat);
+        LOG.log(Level.INFO, "comparisonDateFormat = " + comparisonDateFormat);
+        LOG.log(Level.INFO, "tweetTimestampID = " + tweetTimestampID);
+        LOG.log(Level.INFO, "tweetTextID = " + tweetTextID);
+        LOG.log(Level.INFO, "partResultLogIDs = " + partResultLogIDs);
+        LOG.log(Level.INFO, "activeWindow = " + activeWindow);
+        LOG.log(Level.INFO, "logfile = " + logfile);
 
         MapReduceFactory.getMapReduce().start();
         SentimentComputation sentimentComputation = new SentimentComputation();
@@ -126,6 +141,10 @@ public class ProjectLauncher {
                     CSVHandler.getDataset(comparisonPath, new SimpleDateFormat(comparisonDateFormat)));
             exit();
         }
+    }
+
+    public static void main(String[] args) {
+        new ProjectLauncher();
     }
 
     public void exit() {

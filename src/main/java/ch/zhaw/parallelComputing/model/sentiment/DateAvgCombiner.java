@@ -1,3 +1,22 @@
+/*
+ * Copyright (c) 2014 Max Schrimpf
+ *
+ * This file is part of the parallel computing term paper for the Zurich university of applied sciences.
+ *
+ * It is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * The program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package ch.zhaw.parallelComputing.model.sentiment;
 
 import ch.zhaw.mapreduce.CombinerInstruction;
@@ -22,10 +41,10 @@ public class DateAvgCombiner implements CombinerInstruction {
         String key;
         Double[] tmp;
 
-        while(keyValuePairIterator.hasNext()) {
-           KeyValuePair pair = keyValuePairIterator.next();
+        while (keyValuePairIterator.hasNext()) {
+            KeyValuePair pair = keyValuePairIterator.next();
 
-            if(kvPairs.containsKey(pair.getKey())) {
+            if (kvPairs.containsKey(pair.getKey())) {
                 tmp = kvPairs.get(pair.getKey());
                 tmp[0]++;
                 tmp[1] += Integer.parseInt(pair.getValue());
@@ -36,11 +55,11 @@ public class DateAvgCombiner implements CombinerInstruction {
         }
         Iterator mapIterator = kvPairs.keySet().iterator();
 
-        while(mapIterator.hasNext()) {
+        while (mapIterator.hasNext()) {
             key = (String) mapIterator.next();
             tmp = kvPairs.get(key);
             LOG.info("Combined " + tmp[0] + " tweets at " + key);
-            returnList.add(new KeyValuePair(key, "" + (tmp[1]/tmp[0])));
+            returnList.add(new KeyValuePair(key, "" + (tmp[1] / tmp[0])));
         }
         return returnList;
     }

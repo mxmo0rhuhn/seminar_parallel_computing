@@ -1,3 +1,22 @@
+/*
+ * Copyright (c) 2014 Max Schrimpf
+ *
+ * This file is part of the parallel computing term paper for the Zurich university of applied sciences.
+ *
+ * It is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * The program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package ch.zhaw.parallelComputing.view;
 
 import ch.zhaw.parallelComputing.controller.ProjectLauncher;
@@ -132,8 +151,8 @@ public class GUI extends JFrame {
                                 GUI.this.println("Compare with: " + currentComparisonFile);
 
                                 ComparisonDialog dialog = new ComparisonDialog(GUI.this,
-                                                            currentResultFile, iterator.getTargetFormatString(),
-                                                            currentComparisonFile, getCurrentComparisonFileDateFormat);
+                                        currentResultFile, iterator.getTargetFormatString(),
+                                        currentComparisonFile, getCurrentComparisonFileDateFormat);
                                 dialog.pack();
                                 dialog.setVisible(true);
                             }
