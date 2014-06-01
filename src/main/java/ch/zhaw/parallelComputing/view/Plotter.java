@@ -37,14 +37,67 @@ import java.io.IOException;
 /**
  * Wrapper for the plotting library.
  *
- * @author  Max Schrimpf
+ * @author Max Schrimpf
  */
 public class Plotter {
 
-    public static void plot(Component parent, String title, XYDataset dataset1, XYDataset dataset2) {
+    /**
+     * Creates a PNG plot of the given data set
+     * @param title the name of the plot picture
+     * @param dataset1 the first data set for plotting
+     * @param dataset2 the second data set for plotting
+     */
+    public static void getPlotAsPNG(String title, XYDataset dataset1, XYDataset dataset2) {
+        JFreeChart chart = plot(title, dataset1, dataset2);
+        try {
+            ChartUtilities.saveChartAsPNG(new File(title + ".png"), chart, 1920, 1080);
+        } catch (IOException e) {
+            System.err.println("Problem occurred creating chart.");
+        }
+    }
+
+    /**
+     * Displays a plot of the given data sets as a dialog with a save as PNG option
+     * @param parent component to set the dialog relative to
+     * @param title the name of the Plot and the header of the dialog
+     * @param dataset1 the first data set for plotting
+     * @param dataset2 the second data set for plotting
+     */
+    public static void plotWithDialog(Component parent, String title, XYDataset dataset1, XYDataset dataset2) {
+        JFreeChart chart = plot(title, dataset1, dataset2);
+
+        ChartPanel chartPanel = new ChartPanel(chart);
+        chartPanel.setPreferredSize(new java.awt.Dimension(1024, 768));
+        chartPanel.setMouseZoomable(true, false);
+
+        String[] options = {"Print", "OK"};
+        int response = JOptionPane.showOptionDialog(
+                parent                       // Center in window.
+                , chartPanel
+                , title                      // Title in titlebar
+                , JOptionPane.YES_NO_OPTION  // Option type
+                , JOptionPane.PLAIN_MESSAGE  // messageType
+                , null                       // Icon (none)
+                , options                     // Button text as above.
+                , "OK"                        // Default button
+        );
+
+        if (response == 0) {
+            getPlotAsPNG(title, dataset1, dataset2);
+        }
+    }
+
+    /**
+     * Generates a plot for comparing to datasets
+     * @param title the name of the plot
+     * @param dataset1 the first data set for plotting
+     * @param dataset2 the second data set for plotting
+     * @return a chart object for displaying or saving as picture
+     */
+    public static JFreeChart plot(String title, XYDataset dataset1, XYDataset dataset2) {
 
         JFreeChart chart = ChartFactory.createTimeSeriesChart(
-                "Comparison",           // title
+                title,                  // title
                 "Date",                 // x-axis label
                 "Input Value",          // y-axis label
                 dataset1,               // data
@@ -69,28 +122,6 @@ public class Plotter {
         renderer.setBaseShapesVisible(false);
         plot.setRenderer(1, renderer);
 
-        ChartPanel chartPanel = new ChartPanel(chart);
-        chartPanel.setPreferredSize(new java.awt.Dimension(1024, 768));
-        chartPanel.setMouseZoomable(true, false);
-
-        String[] options = {"Print", "OK"};
-        int response = JOptionPane.showOptionDialog(
-                parent                       // Center in window.
-                , chartPanel
-                , title                      // Title in titlebar
-                , JOptionPane.YES_NO_OPTION  // Option type
-                , JOptionPane.PLAIN_MESSAGE  // messageType
-                , null                       // Icon (none)
-                , options                     // Button text as above.
-                , "OK"                        // Default button
-        );
-
-        if (response == 0) {
-            try {
-                ChartUtilities.saveChartAsPNG(new File(title + ".png"), chart, 1920, 1080);
-            } catch (IOException e) {
-                System.err.println("Problem occurred creating chart.");
-            }
-        }
+        return chart;
     }
 }

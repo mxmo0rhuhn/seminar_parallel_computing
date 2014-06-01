@@ -102,7 +102,7 @@ public class ComparisonDialog extends JDialog {
                 parent.setGetCurrentComparisonFileDateFormat(comparisonFileFormatString);
             }
 
-            Plotter.plot(parent, "Comparison",
+            Plotter.plotWithDialog(parent, "Comparison",
                     CSVHandler.getDataset(comparisonFile, new SimpleDateFormat(comparisonFileFormatString)),
                     CSVHandler.getDataset(resultFile, new SimpleDateFormat(resultFileFormatString)));
             dispose();

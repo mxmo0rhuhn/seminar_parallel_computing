@@ -137,7 +137,7 @@ public class ProjectLauncher {
 
         if (!activeWindow) {
             sentimentComputation.start(it, outputPath);
-            Plotter.plot(null, "Comparison",
+            Plotter.getPlotAsPNG("Comparison",
                     CSVHandler.getDataset(outputPath, new SimpleDateFormat(outputDateFormat)),
                     CSVHandler.getDataset(comparisonPath, new SimpleDateFormat(comparisonDateFormat)));
             exit();
