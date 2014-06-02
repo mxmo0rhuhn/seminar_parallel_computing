@@ -93,12 +93,18 @@ public class ConsoleObserver implements Observer {
         OutputStream out = new OutputStream() {
             @Override
             public void write(int b) throws IOException {
-                printStreams(String.valueOf((char) b), false);
+                String logString = String.valueOf((char) b) ;
+                if (!logString.equals(System.getProperty("line.separator"))) {
+                    printStreams(logString , true);
+                }
             }
 
             @Override
             public void write(byte[] b, int off, int len) throws IOException {
-                printStreams(new String(b, off, len), false);
+                String logString = String.valueOf(new String(b, off, len));
+                if (!logString.equals(System.getProperty("line.separator"))) {
+                    printStreams(logString , true);
+                }
             }
 
             @Override
@@ -110,12 +116,18 @@ public class ConsoleObserver implements Observer {
         OutputStream log = new OutputStream() {
             @Override
             public void write(int b) throws IOException {
-                LOG.severe(String.valueOf((char) b));
+                String logString = String.valueOf((char) b) ;
+                if (!logString.contains("Adding annotator") && !logString.equals(System.getProperty("line.separator"))) {
+                    LOG.severe(logString);
+                }
             }
 
             @Override
             public void write(byte[] b, int off, int len) throws IOException {
-                LOG.severe(new String(b, off, len));
+                String logString = String.valueOf(new String(b, off, len));
+                if (!logString.contains("Adding annotator") && !logString.equals(System.getProperty("line.separator"))) {
+                    LOG.severe(logString);
+                }
             }
 
             @Override

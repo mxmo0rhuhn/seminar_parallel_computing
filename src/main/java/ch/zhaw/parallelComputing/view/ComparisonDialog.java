@@ -55,13 +55,13 @@ public class ComparisonDialog extends JDialog {
         this.comparisonFileFormatString = comparisonFileFormatString;
         this.parent = parent;
 
-        setTitle("Configure Comparison");
         setContentPane(contentPane);
-        this.resultFile = resultFile;
-        this.resultFileFormatString = resultFileFormatString;
-
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
+
+        setTitle("Configure Comparison");
+        this.resultFile = resultFile;
+        this.resultFileFormatString = resultFileFormatString;
 
         dateSelector.setSelectedIndex(0);
         dateSelector.setSelectedIndex(1);
