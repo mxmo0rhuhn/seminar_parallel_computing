@@ -40,6 +40,9 @@ import java.util.List;
  */
 public class CSVHandler {
 
+    public static XYDataset getDataset(String filename, SimpleDateFormat timeFormat) {
+        return getDataset(0,1,filename,timeFormat);
+    }
     /**
      * Parses a CSV File into a dataset for plotting.
      *
@@ -49,7 +52,7 @@ public class CSVHandler {
      * @param timeFormat The time format of the files first column
      * @return A Dataset containing the values of the CSV
      */
-    public static XYDataset getDataset(String filename, SimpleDateFormat timeFormat) {
+    public static XYDataset getDataset(int TSDIndex, int valueIndex, String filename, SimpleDateFormat timeFormat) {
         TimeSeries s2 = new TimeSeries(filename, "Domain", "Range", FixedMillisecond.class);
         TimeSeriesCollection dataset = new TimeSeriesCollection();
 
@@ -64,8 +67,8 @@ public class CSVHandler {
             while ((nextLine = reader.readNext()) != null) {
                 // Timestamp
                 try {
-                    Date tsd = timeFormat.parse(nextLine[0]);
-                    Float content = Float.parseFloat(nextLine[1]);
+                    Date tsd = timeFormat.parse(nextLine[TSDIndex]);
+                    Float content = Float.parseFloat(nextLine[valueIndex]);
                     s2.add(new FixedMillisecond(tsd), content);
                 } catch (ParseException e) {
                     e.printStackTrace(System.out);

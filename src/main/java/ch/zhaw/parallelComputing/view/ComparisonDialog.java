@@ -25,6 +25,7 @@ import ch.zhaw.parallelComputing.model.sentiment.FileIterator;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.List;
 import java.text.SimpleDateFormat;
 
 /**
@@ -39,6 +40,8 @@ public class ComparisonDialog extends JDialog {
     private JTextField resultDateFormat;
     private JTextField comparisonDateFormat;
     private JLabel infoLabel;
+    private JComboBox dateSelector;
+    private JComboBox valueSelector;
     private final String resultFile;
     private final String comparisonFile;
     private final GUI parent;
@@ -48,17 +51,20 @@ public class ComparisonDialog extends JDialog {
 
     public ComparisonDialog(GUI parent, String resultFile, String resultFileFormatString,
                             String currentComparisonFile, String comparisonFileFormatString) {
-        setTitle("Configure Comparison");
-        setContentPane(contentPane);
-        this.resultFile = resultFile;
-        this.resultFileFormatString = resultFileFormatString;
         this.comparisonFile = currentComparisonFile;
         this.comparisonFileFormatString = comparisonFileFormatString;
         this.parent = parent;
 
+        setTitle("Configure Comparison");
+        setContentPane(contentPane);
+        this.resultFile = resultFile;
+        this.resultFileFormatString = resultFileFormatString;
+
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
 
+        dateSelector.setSelectedIndex(0);
+        dateSelector.setSelectedIndex(1);
         resultDateFormat.setText(resultFileFormatString);
         comparisonDateFormat.setText(comparisonFileFormatString);
 
@@ -107,7 +113,8 @@ public class ComparisonDialog extends JDialog {
             }
 
             Plotter.plotWithDialog(parent, "Comparison",
-                    CSVHandler.getDataset(comparisonFile, new SimpleDateFormat(comparisonFileFormatString)),
+                    CSVHandler.getDataset(dateSelector.getSelectedIndex(),valueSelector.getSelectedIndex(),
+                                       comparisonFile, new SimpleDateFormat(comparisonFileFormatString)),
                     CSVHandler.getDataset(resultFile, new SimpleDateFormat(resultFileFormatString)));
             dispose();
         } else {
@@ -128,5 +135,12 @@ public class ComparisonDialog extends JDialog {
     private void onCancel() {
 // add your code here if necessary
         dispose();
+    }
+
+    private void createUIComponents() {
+        System.out.println(comparisonFile);
+        List<String> headers = CSVHandler.getHeaders(comparisonFile);
+        dateSelector = new JComboBox(headers.toArray());
+        valueSelector = new JComboBox(headers.toArray());
     }
 }

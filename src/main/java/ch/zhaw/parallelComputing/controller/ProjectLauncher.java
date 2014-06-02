@@ -65,10 +65,14 @@ public class ProjectLauncher {
         String outputDateFormat = "yyyy-MM-dd-HH.mm";
         String comparisonDateFormat = "yyyy-MM-dd";
 
-        // ID of the key of the MAP job
+        // ID of the key for the MAP job
         int tweetTimestampID = 81;
         // ID of the text for sentiment analysis
         int tweetTextID = 18;
+        // ID of the comparison files timestamp
+        int comparisonTSD = 0;
+        // ID of the comparison files value
+        int comparisonValue = 1;
         // IDs for part result logging
         List<Integer> partResultLogIDs = null;
 
@@ -91,6 +95,8 @@ public class ProjectLauncher {
             offset = Long.parseLong(prop.getProperty("offset", "" + offset));
             tweetTimestampID = Integer.parseInt(prop.getProperty("tweetTimestampID", "" + tweetTimestampID));
             tweetTextID = Integer.parseInt(prop.getProperty("tweetTextID", "" + tweetTextID));
+            comparisonTSD = Integer.parseInt(prop.getProperty("comparisonTSD", "" + comparisonTSD));
+            comparisonValue = Integer.parseInt(prop.getProperty("comparisonValue", "" + comparisonValue));
             logfile = prop.getProperty("logfile", logfile);
             activeWindow = Boolean.valueOf(prop.getProperty("window", "" + activeWindow));
 
@@ -148,7 +154,8 @@ public class ProjectLauncher {
             sentimentComputation.start(it, outputPath);
             Plotter.getPlotAsPNG("Comparison",
                     CSVHandler.getDataset(outputPath, new SimpleDateFormat(outputDateFormat)),
-                    CSVHandler.getDataset(comparisonPath, new SimpleDateFormat(comparisonDateFormat)));
+                    CSVHandler.getDataset(comparisonTSD, comparisonValue, comparisonPath,
+                                            new SimpleDateFormat(comparisonDateFormat)));
             exit();
         }
     }
