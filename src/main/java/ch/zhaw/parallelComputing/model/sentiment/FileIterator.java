@@ -146,11 +146,10 @@ public class FileIterator implements Iterator<String> {
             oos.writeObject(o);
             oos.close();
  //           Base64.encodeBase64(baos.toByteArray());
-            DatatypeConverter.printBase64Binary(baos.toByteArray());
+            toReturn = new String(DatatypeConverter.printBase64Binary(baos.toByteArray()));
         } catch (IOException e) {
             e.printStackTrace(System.out);
         }
-        System.out.println(toReturn);
         return toReturn;
     }
 
