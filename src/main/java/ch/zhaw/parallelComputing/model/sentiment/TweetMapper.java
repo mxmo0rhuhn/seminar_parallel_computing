@@ -35,6 +35,7 @@ import org.apache.xerces.impl.dv.util.Base64;
 import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -59,14 +60,13 @@ public class TweetMapper implements MapInstruction {
      * , [IDs for logging]
      * , Payload
      * ]
-     * <p/>
+     *
      * If a Log name is given the calculated sentiment will be also logged
-     * <p/>
+     *
      * Sample
      * { "81"
-     * // Sat, 24 May 2014 11:44:57 +0000
-     * , new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z")
-     * , new SimpleDateFormat("yyyy-MM-dd-HH.mm")
+     * , "EEE, dd MMM yyyy HH:mm:ss Z"
+     * , "yyyy-MM-dd-HH.mm"
      * , "18"
      * , "Sentiments.csv"
      * , ["23", "81", "18"]
@@ -84,7 +84,7 @@ public class TweetMapper implements MapInstruction {
 
     private boolean logging = false;
     private String OUT_PATH = null;
-    private List<Integer> logIDs = null;
+    private Integer[] logIDs = null;
 
     private String payload = null;
 
@@ -105,7 +105,7 @@ public class TweetMapper implements MapInstruction {
             if (logging) {
                 writer = new CSVWriter(new FileWriter(OUT_PATH, true));
                 // +1 for the sentiment
-                entries = new String[logIDs.size() + 1];
+                entries = new String[logIDs.length + 1];
             }
 
             String[] nextLine;
@@ -159,11 +159,11 @@ public class TweetMapper implements MapInstruction {
 
         TSD_INDEX = (Integer) inputArray[0];
         TWEET_INDEX = (Integer) inputArray[3];
-        dateParser = (SimpleDateFormat) inputArray[1];
-        targetDate = (SimpleDateFormat) inputArray[2];
+        dateParser = new SimpleDateFormat((String) inputArray[1]);
+        targetDate = new SimpleDateFormat((String) inputArray[2]);
 
         OUT_PATH = (String) inputArray[4];
-        logIDs = (List<Integer>) inputArray[5];
+        logIDs = (Integer[]) inputArray[5];
 
         if (OUT_PATH == null || logIDs == null) {
             logIDs = null;

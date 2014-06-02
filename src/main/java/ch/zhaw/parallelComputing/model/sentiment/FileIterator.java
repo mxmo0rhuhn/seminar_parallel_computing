@@ -21,8 +21,10 @@ package ch.zhaw.parallelComputing.model.sentiment;
 
 import org.apache.mina.util.Base64;
 
+import javax.xml.bind.DatatypeConverter;
 import java.io.*;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
@@ -41,13 +43,13 @@ public class FileIterator implements Iterator<String> {
     // Mandatory input fields
     private final Long offset;
     private final Integer keyID;
-    private final SimpleDateFormat sourceFormat;
-    private final SimpleDateFormat targetFormat;
+    private final String sourceFormat;
+    private final String targetFormat;
     private final Integer tweetID;
 
     // Optional fields
     private final String logFileName;
-    private final List<Integer> logFields;
+    private final Integer[] logFields;
 
     // Fields for processing
     private boolean hasNext;
@@ -57,15 +59,25 @@ public class FileIterator implements Iterator<String> {
                         String sourceFormat, String targetFormat,
                         String logFileName, List<Integer> logFields) {
 
-        this.logFields = logFields;
+        if(logFields != null) {
+            this.logFields = (Integer[]) logFields.toArray();
+        } else {
+            this.logFields = null;
+        }
+
         this.logFileName = logFileName;
 
         hasNext = true;
         this.offset = offset;
         this.keyID = keyID;
         this.tweetID = tweetID;
-        this.sourceFormat = new SimpleDateFormat(sourceFormat);
-        this.targetFormat = new SimpleDateFormat(targetFormat);
+        this.sourceFormat = sourceFormat;
+        this.targetFormat = targetFormat;
+    }
+
+    public FileIterator(Long offset, Integer keyID, Integer tweetID,
+                        String sourceFormat, String targetFormat) {
+        this(offset, keyID, tweetID, sourceFormat, targetFormat, null, null);
     }
 
     public boolean setFile(String filename) {
@@ -79,11 +91,6 @@ public class FileIterator implements Iterator<String> {
             LOG.severe("Can't read input file");
         }
         return false;
-    }
-
-    public FileIterator(Long offset, Integer keyID, Integer tweetID,
-                        String sourceFormat, String targetFormat) {
-        this(offset, keyID, tweetID, sourceFormat, targetFormat, null, null);
     }
 
     private String testAndGetLine() {
@@ -128,20 +135,22 @@ public class FileIterator implements Iterator<String> {
         }
         Object[] send = new Object[]{keyID, sourceFormat, targetFormat, tweetID, logFileName, logFields,
                 toReturn.toString()};
-        return toString(send);
+        return encode(send);
     }
 
-    private String toString(Object o) {
+    private String encode(Object o) {
         String toReturn = null;
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(baos);
             oos.writeObject(o);
             oos.close();
-            toReturn = new String(Base64.encodeBase64(baos.toByteArray()));
+ //           Base64.encodeBase64(baos.toByteArray());
+            DatatypeConverter.printBase64Binary(baos.toByteArray());
         } catch (IOException e) {
             e.printStackTrace(System.out);
         }
+        System.out.println(toReturn);
         return toReturn;
     }
 
@@ -164,7 +173,7 @@ public class FileIterator implements Iterator<String> {
     }
 
     public List<Integer> getLogFields() {
-        return logFields;
+        return Arrays.asList(logFields);
     }
 
     public Long getOffset() {
@@ -176,11 +185,11 @@ public class FileIterator implements Iterator<String> {
     }
 
     public String getSourceFormatString() {
-        return sourceFormat.toPattern();
+        return sourceFormat;
     }
 
     public String getTargetFormatString() {
-        return targetFormat.toPattern();
+        return targetFormat;
     }
 
     public Integer getTweetID() {

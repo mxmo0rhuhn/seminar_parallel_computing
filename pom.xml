@@ -52,7 +52,7 @@
   </build>
 
   <dependencies>
-    <dependency>
+      <dependency>
       <groupId>com.intellij</groupId>
       <artifactId>forms_rt</artifactId>
       <version>5.0</version>
