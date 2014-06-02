@@ -85,8 +85,12 @@ public class MapAttributesDialog extends JDialog {
         getRootPane().setDefaultButton(buttonOK);
         setTitle("Select MAP configuration");
 
-        dateSelector.setSelectedIndex(iterator.getKeyID());
-        textSelector.setSelectedIndex(iterator.getTweetID());
+        if(dateSelector.getMaximumRowCount() >= iterator.getKeyID()) {
+            dateSelector.setSelectedIndex(iterator.getKeyID());
+        }
+        if(textSelector.getMaximumRowCount() >= iterator.getTweetID()) {
+            textSelector.setSelectedIndex(iterator.getTweetID());
+        }
         dateInField.setText(iterator.getSourceFormatString());
         dateOutField.setText(iterator.getTargetFormatString());
         offsetField.setText(iterator.getOffset().toString());
@@ -244,7 +248,7 @@ public class MapAttributesDialog extends JDialog {
                                                           boolean isSelected, boolean cellHasFocus) {
                 JCheckBox checkbox = (JCheckBox) value;
                 checkbox.setBackground(isSelected ? getSelectionBackground() : getBackground());
-                checkbox.setForeground(isSelected ? getSelectionForeground() : getForeground());
+                checkbox.setForeground(isSelected ?  Color.BLUE: getForeground());
                 checkbox.setEnabled(isEnabled());
                 checkbox.setFont(getFont());
                 checkbox.setFocusPainted(false);
