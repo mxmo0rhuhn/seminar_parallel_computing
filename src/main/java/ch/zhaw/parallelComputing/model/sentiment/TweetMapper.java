@@ -32,6 +32,7 @@ import edu.stanford.nlp.trees.Tree;
 import edu.stanford.nlp.util.CoreMap;
 import org.apache.xerces.impl.dv.util.Base64;
 
+import javax.xml.bind.DatatypeConverter;
 import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -148,7 +149,7 @@ public class TweetMapper implements MapInstruction {
      * Read the object from Base64 string.
      */
     private void parseProtokollFromString(String s) throws IOException, ClassNotFoundException {
-        byte[] data = Base64.decode(s);
+        byte[] data = DatatypeConverter.parseBase64Binary(s);
         ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));
         Object[] inputArray = (Object[]) ois.readObject();
         ois.close();
