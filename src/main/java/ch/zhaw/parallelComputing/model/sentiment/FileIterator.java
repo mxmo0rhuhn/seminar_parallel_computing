@@ -62,7 +62,7 @@ public class FileIterator implements Iterator<String> {
         if(logFields != null) {
             this.logFields = (Integer[]) logFields.toArray();
         } else {
-            this.logFields = null;
+            this.logFields = new Integer[0];
         }
 
         this.logFileName = logFileName;
