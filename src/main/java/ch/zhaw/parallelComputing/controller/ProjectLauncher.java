@@ -152,10 +152,15 @@ public class ProjectLauncher {
         if (!activeWindow) {
             it.setFile(inputPath);
             sentimentComputation.start(it, outputPath);
-            Plotter.getPlotAsPNG("Comparison",
-                    CSVHandler.getDataset(outputPath, new SimpleDateFormat(outputDateFormat)),
-                    CSVHandler.getDataset(comparisonTSD, comparisonValue, comparisonPath,
-                                            new SimpleDateFormat(comparisonDateFormat)));
+            try {
+                Plotter.getPlotAsPNG("Comparison",
+                        CSVHandler.getDataset(outputPath, new SimpleDateFormat(outputDateFormat)),
+                        CSVHandler.getDataset(comparisonTSD, comparisonValue, comparisonPath,
+                                new SimpleDateFormat(comparisonDateFormat)));
+            } catch (Exception e) {
+                e.printStackTrace(System.out);
+                LOG.severe("Could not plot");
+            }
             exit();
         }
     }

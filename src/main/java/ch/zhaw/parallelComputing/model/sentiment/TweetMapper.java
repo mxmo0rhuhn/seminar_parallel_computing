@@ -30,14 +30,11 @@ import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.sentiment.SentimentCoreAnnotations;
 import edu.stanford.nlp.trees.Tree;
 import edu.stanford.nlp.util.CoreMap;
-import org.apache.xerces.impl.dv.util.Base64;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.*;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Date;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -78,8 +75,8 @@ public class TweetMapper implements MapInstruction {
     private static final Logger LOG = Logger.getLogger(TweetMapper.class.getName());
 
     private int TSD_INDEX = 0;
-    private SimpleDateFormat dateParser = null;
-    private SimpleDateFormat targetDate = null;
+    private String sourceDate = null;
+    private String targetDate = null;
 
     private int TWEET_INDEX = 0;
 
@@ -97,6 +94,8 @@ public class TweetMapper implements MapInstruction {
 
         try {
             parseProtokollFromString(input);
+            SimpleDateFormat sourceDateFormat = new SimpleDateFormat(sourceDate);
+            SimpleDateFormat targetDateFormat = new SimpleDateFormat(targetDate);
 
             CSVWriter writer = null;
             CSVReader reader = new CSVReader(new StringReader(payload));
@@ -111,10 +110,13 @@ public class TweetMapper implements MapInstruction {
 
             String[] nextLine;
             while ((nextLine = reader.readNext()) != null) {
-                String key;
+                String  key =  nextLine[TSD_INDEX];
                 try {
-                    key = targetDate.format(dateParser.parse(nextLine[TSD_INDEX]));
-                } catch (ParseException e) {
+                    Date date = sourceDateFormat.parse(key);
+                    key = targetDateFormat.format(date);
+                } catch (Exception e) {
+                    System.out.println(key);
+                    e.printStackTrace(System.out);
                     key = DEFAULT_OUT_DATE;
                 }
                 String sentiment = findSentiment(nextLine[TWEET_INDEX]).toString();
@@ -160,8 +162,10 @@ public class TweetMapper implements MapInstruction {
 
         TSD_INDEX = (Integer) inputArray[0];
         TWEET_INDEX = (Integer) inputArray[3];
-        dateParser = new SimpleDateFormat((String) inputArray[1]);
-        targetDate = new SimpleDateFormat((String) inputArray[2]);
+
+        sourceDate = (String) inputArray[1];
+
+        targetDate = (String) inputArray[2];
 
         OUT_PATH = (String) inputArray[4];
         logIDs = (Integer[]) inputArray[5];
