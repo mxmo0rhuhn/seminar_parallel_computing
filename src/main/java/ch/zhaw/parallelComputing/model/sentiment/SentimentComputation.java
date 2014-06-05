@@ -43,8 +43,8 @@ public class SentimentComputation extends Observable {
 
     public SentimentComputation() {
         hasResults = true;
-//        computer = MapReduceFactory.getMapReduce().newMRTask(new TweetMapper(), new DateAvgReducer(), null, null);
-        computer = MapReduceFactory.getMapReduce().newMRTask(new TweetMapper(), new DateAvgReducer(), new DateAvgCombiner(), null);
+        computer = MapReduceFactory.getMapReduce().newMRTask(new TweetMapper(), new DateAvgReducer(), null, null);
+ //       computer = MapReduceFactory.getMapReduce().newMRTask(new TweetMapper(), new DateAvgReducer(), new DateAvgCombiner(), null);
     }
 
     public void start(Iterator it, String outFile) {
