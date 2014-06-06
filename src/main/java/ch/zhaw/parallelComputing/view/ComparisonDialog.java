@@ -109,7 +109,7 @@ public class ComparisonDialog extends JDialog {
             comparisonFileFormatString = comparisonDateFormat.getText();
 
             if (parent != null) {
-                parent.setGetCurrentComparisonFileDateFormat(comparisonFileFormatString);
+                parent.setCurrentComparisonFileDateFormat(comparisonFileFormatString);
             }
 
             Plotter.plotWithDialog(parent, "Comparison",

@@ -56,7 +56,7 @@ public class GUI extends JFrame {
     private String currentResultFile;
     private String currentComparisonFile;
 
-    private String getCurrentComparisonFileDateFormat;
+    private String currentComparisonFileDateFormat;
 
     private final WindowListener exitListener = new WindowAdapter() {
 
@@ -89,7 +89,7 @@ public class GUI extends JFrame {
         this.selectInputButton.setText(currentInputFile);
         this.selectResultButton.setText(currentResultFile);
         this.selectCompareButton.setText(currentComparisonFile);
-        this.getCurrentComparisonFileDateFormat = comparisonFileDateFormat;
+        this.currentComparisonFileDateFormat = comparisonFileDateFormat;
 
         setStartButtonListener();
         setSelectInputButtonListener();
@@ -120,11 +120,13 @@ public class GUI extends JFrame {
                                 DecimalFormat df = new DecimalFormat("000");
                                 List<String> headers = CSVHandler.getHeaders(GUI.this.currentInputFile);
 
-                                MapAttributesDialog dialog = new MapAttributesDialog(GUI.this, iterator, headers);
+                                MapAttributesDialog dialog = new MapAttributesDialog(GUI.this, GUI.this.iterator, headers);
 
                                 FileIterator newIterator = dialog.getIterator();
                                 if (newIterator != null) {
-                                    iterator = newIterator;
+                                    GUI.this.iterator = newIterator;
+                                } else {
+                                    System.out.println("Could not get Configuration");
                                 }
                                 for (int i = 0; i < headers.size(); i++) {
                                     GUI.this.println(df.format(i) + " = " + headers.get(i));
@@ -142,7 +144,7 @@ public class GUI extends JFrame {
                                 GUI.this.evaluateRadioButton.setSelected(false);
                                 GUI.this.compareRadioButton.setSelected(true);
                                 GUI.this.iterator.setFile(currentInputFile);
-                                GUI.this.comp.start(iterator, currentResultFile);
+                                GUI.this.comp.start(GUI.this.iterator, currentResultFile);
                             }
                         }).start();
                     } else if (compareRadioButton.isSelected()) {
@@ -152,8 +154,8 @@ public class GUI extends JFrame {
                                 GUI.this.println("Compare with: " + currentComparisonFile);
 
                                 ComparisonDialog dialog = new ComparisonDialog(GUI.this,
-                                        currentResultFile, iterator.getTargetFormatString(),
-                                        currentComparisonFile, getCurrentComparisonFileDateFormat);
+                                        GUI.this.currentResultFile, GUI.this.iterator.getTargetFormatString(),
+                                        GUI.this.currentComparisonFile, GUI.this.currentComparisonFileDateFormat);
                             }
                         }).start();
                     } else {
@@ -255,8 +257,8 @@ public class GUI extends JFrame {
         startButton.setEnabled(true);
     }
 
-    public void setGetCurrentComparisonFileDateFormat(String getCurrentComparisonFileDateFormat) {
-        this.getCurrentComparisonFileDateFormat = getCurrentComparisonFileDateFormat;
+    public void setCurrentComparisonFileDateFormat(String currentComparisonFileDateFormat) {
+        this.currentComparisonFileDateFormat = currentComparisonFileDateFormat;
     }
 
 }

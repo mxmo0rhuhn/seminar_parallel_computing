@@ -19,12 +19,10 @@
 
 package ch.zhaw.parallelComputing.model.sentiment;
 
-import org.apache.mina.util.Base64;
-
 import javax.xml.bind.DatatypeConverter;
 import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
@@ -49,7 +47,7 @@ public class FileIterator implements Iterator<String> {
 
     // Optional fields
     private final String logFileName;
-    private final Integer[] logFields;
+    private final List<Integer> logFields;
 
     // Fields for processing
     private boolean hasNext;
@@ -60,9 +58,9 @@ public class FileIterator implements Iterator<String> {
                         String logFileName, List<Integer> logFields) {
 
         if(logFields != null) {
-            this.logFields = (Integer[]) logFields.toArray();
+            this.logFields = logFields;
         } else {
-            this.logFields = new Integer[0];
+            this.logFields = new ArrayList<>();
         }
 
         this.logFileName = logFileName;
@@ -145,8 +143,7 @@ public class FileIterator implements Iterator<String> {
             ObjectOutputStream oos = new ObjectOutputStream(baos);
             oos.writeObject(o);
             oos.close();
- //           Base64.encodeBase64(baos.toByteArray());
-            toReturn = new String(DatatypeConverter.printBase64Binary(baos.toByteArray()));
+            toReturn = DatatypeConverter.printBase64Binary(baos.toByteArray());
         } catch (IOException e) {
             e.printStackTrace(System.out);
         }
@@ -172,7 +169,7 @@ public class FileIterator implements Iterator<String> {
     }
 
     public List<Integer> getLogFields() {
-        return Arrays.asList(logFields);
+        return logFields;
     }
 
     public Long getOffset() {

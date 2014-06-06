@@ -35,6 +35,7 @@ import javax.xml.bind.DatatypeConverter;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -82,7 +83,7 @@ public class TweetMapper implements MapInstruction {
 
     private boolean logging = false;
     private String OUT_PATH = null;
-    private Integer[] logIDs = null;
+    private List<Integer> logIDs = null;
 
     private String payload = null;
 
@@ -105,7 +106,9 @@ public class TweetMapper implements MapInstruction {
             if (logging) {
                 writer = new CSVWriter(new FileWriter(OUT_PATH, true));
                 // +1 for the sentiment
-                entries = new String[logIDs.length + 1];
+                entries = new String[logIDs.size() + 1];
+            } else {
+                entries = new String[0];
             }
 
             String[] nextLine;
@@ -168,7 +171,7 @@ public class TweetMapper implements MapInstruction {
         targetDate = (String) inputArray[2];
 
         OUT_PATH = (String) inputArray[4];
-        logIDs = (Integer[]) inputArray[5];
+        logIDs = (List<Integer>) inputArray[5];
 
         if (OUT_PATH == null || logIDs == null) {
             logIDs = null;

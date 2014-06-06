@@ -28,7 +28,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -56,12 +55,6 @@ public class MapAttributesDialog extends JDialog {
 
     private boolean inputSelected = false;
     private final List<String> possibleFields;
-
-    private int tsdIndex = 0;
-    private int tweetIndex = 0;
-
-    private SimpleDateFormat dateParser = null;
-    private SimpleDateFormat targetDate = null;
 
     private boolean logging = true;
     private String logFileName = null;
@@ -103,7 +96,6 @@ public class MapAttributesDialog extends JDialog {
                 onOK();
             }
         });
-
         buttonCancel.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 onCancel();
