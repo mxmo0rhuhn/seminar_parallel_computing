@@ -136,14 +136,30 @@ public class MapAttributesDialog extends JDialog {
         }
     }
 
+    private boolean validDates() {
+        if (FileIterator.isValidDateFormat(dateInField.getText())
+                && FileIterator.isValidDateFormat(dateOutField.getText())){
+            return true;
+        }
+        return false;
+    }
+
+    private boolean validLogging() {
+        if ( (loggingCheckBox.isSelected() && loggingList.getSelectedBoxes().size() > 0
+                && logfileNameField.getText().length() > 0) || !loggingCheckBox.isSelected()) {
+            return true;
+        }
+        return false;
+    }
+
     private void onOK() {
 // add your code here
-        if (FileIterator.isValidDateFormat(dateInField.getText())
-                && FileIterator.isValidDateFormat(dateOutField.getText())) {
+        if(validDates() && validLogging()) {
             inputSelected = true;
             logging = loggingCheckBox.isSelected();
             dispose();
         } else {
+            if(!validDates()) {
             infoField.setText("Not a valid date format");
             if (!FileIterator.isValidDateFormat(dateInField.getText())) {
                 dateInField.setForeground(Color.red);
@@ -154,6 +170,9 @@ public class MapAttributesDialog extends JDialog {
                 dateOutField.setForeground(Color.red);
             } else {
                 dateOutField.setForeground(Color.green);
+            }
+            } else {
+                infoField.setText("Logging properties not valid");
             }
         }
     }
