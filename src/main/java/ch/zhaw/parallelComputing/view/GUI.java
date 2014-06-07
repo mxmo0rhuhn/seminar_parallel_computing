@@ -125,15 +125,11 @@ public class GUI extends JFrame {
                                 FileIterator newIterator = dialog.getIterator();
                                 if (newIterator != null) {
                                     GUI.this.iterator = newIterator;
+                                    GUI.this.showColumnsRadioButton.setSelected(false);
+                                    GUI.this.evaluateRadioButton.setSelected(true);
                                 } else {
                                     System.out.println("Could not get Configuration");
                                 }
-                                for (int i = 0; i < headers.size(); i++) {
-                                    GUI.this.println(df.format(i) + " = " + headers.get(i));
-                                }
-
-                                GUI.this.showColumnsRadioButton.setSelected(false);
-                                GUI.this.evaluateRadioButton.setSelected(true);
                             }
                         }).start();
                     } else if (evaluateRadioButton.isSelected()) {

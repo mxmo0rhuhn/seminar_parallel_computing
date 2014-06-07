@@ -78,12 +78,14 @@ public class MapAttributesDialog extends JDialog {
         getRootPane().setDefaultButton(buttonOK);
         setTitle("Select MAP configuration");
 
-        if(dateSelector.getMaximumRowCount() >= iterator.getKeyID()) {
+        if(dateSelector.getItemCount() > iterator.getKeyID()) {
             dateSelector.setSelectedIndex(iterator.getKeyID());
         }
-        if(textSelector.getMaximumRowCount() >= iterator.getTweetID()) {
+        if(textSelector.getItemCount() > iterator.getTweetID()) {
+
             textSelector.setSelectedIndex(iterator.getTweetID());
         }
+
         dateInField.setText(iterator.getSourceFormatString());
         dateOutField.setText(iterator.getTargetFormatString());
         offsetField.setText(iterator.getOffset().toString());
