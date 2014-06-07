@@ -94,7 +94,7 @@ public class ConsoleObserver implements Observer {
             @Override
             public void write(int b) throws IOException {
                 String logString = String.valueOf((char) b) ;
-                if (!logString.equals(System.getProperty("line.separator"))) {
+                if (!logString.contains("Adding annotator") && !logString.equals(System.getProperty("line.separator"))) {
                     printStreams(logString , true);
                 }
             }
@@ -102,7 +102,7 @@ public class ConsoleObserver implements Observer {
             @Override
             public void write(byte[] b, int off, int len) throws IOException {
                 String logString = String.valueOf(new String(b, off, len));
-                if (!logString.equals(System.getProperty("line.separator"))) {
+                if (!logString.contains("Adding annotator") && !logString.equals(System.getProperty("line.separator"))) {
                     printStreams(logString , true);
                 }
             }
