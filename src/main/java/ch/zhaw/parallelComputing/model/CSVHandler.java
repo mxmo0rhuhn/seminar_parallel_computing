@@ -72,7 +72,8 @@ public class CSVHandler {
                     s2.add(new FixedMillisecond(tsd), content);
                 } catch (ParseException e) {
                     e.printStackTrace(System.out);
-                    System.out.println("Can't parse " + nextLine);
+                    System.out.println("Can't parse = " + nextLine[TSDIndex]);
+                    System.out.println("to format   = " + timeFormat.toPattern());
                 }
             }
             reader.close();

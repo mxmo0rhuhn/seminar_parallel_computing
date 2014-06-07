@@ -64,7 +64,7 @@ public class ComparisonDialog extends JDialog {
         this.resultFileFormatString = resultFileFormatString;
 
         dateSelector.setSelectedIndex(0);
-        dateSelector.setSelectedIndex(1);
+        valueSelector.setSelectedIndex(1);
         resultDateFormat.setText(resultFileFormatString);
         comparisonDateFormat.setText(comparisonFileFormatString);
 
@@ -105,17 +105,20 @@ public class ComparisonDialog extends JDialog {
 // add your code here
         if (FileIterator.isValidDateFormat(resultDateFormat.getText())
                 && FileIterator.isValidDateFormat(comparisonDateFormat.getText())) {
-            resultFileFormatString = resultDateFormat.getText();
-            comparisonFileFormatString = comparisonDateFormat.getText();
+            ComparisonDialog.this.resultFileFormatString = resultDateFormat.getText();
+            ComparisonDialog.this.comparisonFileFormatString = comparisonDateFormat.getText();
 
             if (parent != null) {
                 parent.setCurrentComparisonFileDateFormat(comparisonFileFormatString);
             }
 
             Plotter.plotWithDialog(parent, "Comparison",
-                    CSVHandler.getDataset(dateSelector.getSelectedIndex(),valueSelector.getSelectedIndex(),
-                                       comparisonFile, new SimpleDateFormat(comparisonFileFormatString)),
-                    CSVHandler.getDataset(resultFile, new SimpleDateFormat(resultFileFormatString)));
+                    CSVHandler.getDataset(ComparisonDialog.this.dateSelector.getSelectedIndex()
+                                         ,ComparisonDialog.this.valueSelector.getSelectedIndex()
+                                         ,ComparisonDialog.this.comparisonFile
+                                         , new SimpleDateFormat(ComparisonDialog.this.comparisonFileFormatString)),
+                    CSVHandler.getDataset(ComparisonDialog.this.resultFile
+                                         ,new SimpleDateFormat(ComparisonDialog.this.resultFileFormatString)));
             dispose();
         } else {
             infoLabel.setText("Not a valid date format");
