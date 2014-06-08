@@ -20,6 +20,7 @@
 package ch.zhaw.parallelComputing.model;
 
 import au.com.bytecode.opencsv.CSVReader;
+import ch.zhaw.mapreduce.KeyValuePair;
 import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
@@ -29,9 +30,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Helper Methods for CSV File Handling
@@ -56,30 +55,50 @@ public class CSVHandler {
         TimeSeries s2 = new TimeSeries(filename, "Domain", "Range", FixedMillisecond.class);
         TimeSeriesCollection dataset = new TimeSeriesCollection();
 
+        List<KeyValuePair> keyValuePairs = new ArrayList<>();
+
         try {
             CSVReader reader = new CSVReader(new FileReader(filename));
-
             String[] nextLine;
 
             // HEADER
             nextLine = reader.readNext();
 
             while ((nextLine = reader.readNext()) != null) {
-                // Timestamp
                 try {
-                    Date tsd = timeFormat.parse(nextLine[TSDIndex]);
-                    Float content = Float.parseFloat(nextLine[valueIndex]);
-                    s2.add(new FixedMillisecond(tsd), content);
+                    String key = timeFormat.format(timeFormat.parse(nextLine[TSDIndex]));
+                    keyValuePairs.add(new KeyValuePair(key, nextLine[valueIndex]));
                 } catch (ParseException e) {
                     e.printStackTrace(System.out);
                     System.out.println("Can't parse = " + nextLine[TSDIndex]);
                     System.out.println("to format   = " + timeFormat.toPattern());
+                    System.out.println("returning");
+                    return new TimeSeriesCollection();
                 }
             }
             reader.close();
+
         } catch (IOException e) {
             e.printStackTrace(System.out);
             System.out.println("Can't open " + filename);
+            return new TimeSeriesCollection();
+        }
+
+        keyValuePairs = getAverages(keyValuePairs.iterator());
+
+        for (KeyValuePair pair : keyValuePairs) {
+            // Timestamp
+            try {
+                Date tsd = timeFormat.parse(pair.getKey());
+                Float content = Float.parseFloat(pair.getValue());
+                s2.add(new FixedMillisecond(tsd), content);
+            } catch (ParseException e) {
+                e.printStackTrace(System.out);
+                System.out.println("Can't parse = " + pair.getKey());
+                System.out.println("to format   = " + timeFormat.toPattern());
+                System.out.println("returning");
+                return new TimeSeriesCollection();
+            }
         }
         dataset.addSeries(s2);
         return dataset;
@@ -105,6 +124,38 @@ public class CSVHandler {
             reader.close();
         } catch (Exception e) {
             e.printStackTrace(System.out);
+        }
+        return returnList;
+    }
+    Map<String, Double[]> kvPairs = new HashMap<>();
+    List<KeyValuePair> returnList = new ArrayList<>();
+    String key;
+    Double[] tmp;
+
+    public static List<KeyValuePair> getAverages(Iterator<KeyValuePair> keyValuePairIterator) {
+        Map<String, Double[]> kvPairs = new HashMap<>();
+        List<KeyValuePair> returnList = new ArrayList<>();
+        String key;
+        Double[] tmp;
+
+        while (keyValuePairIterator.hasNext()) {
+            KeyValuePair pair = keyValuePairIterator.next();
+
+            if (kvPairs.containsKey(pair.getKey())) {
+                tmp = kvPairs.get(pair.getKey());
+                tmp[0]++;
+                tmp[1] +=  Float.parseFloat(pair.getValue());
+                kvPairs.put(pair.getKey(), tmp);
+            } else {
+                kvPairs.put(pair.getKey(), new Double[]{1.0, Double.parseDouble(pair.getValue())});
+            }
+        }
+        Iterator mapIterator = kvPairs.keySet().iterator();
+
+        while (mapIterator.hasNext()) {
+            key = (String) mapIterator.next();
+            tmp = kvPairs.get(key);
+            returnList.add(new KeyValuePair(key, "" + (tmp[1] / tmp[0])));
         }
         return returnList;
     }
