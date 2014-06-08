@@ -87,8 +87,6 @@ public class TweetMapper implements MapInstruction {
 
     private String payload = null;
 
-    private static final String DEFAULT_OUT_DATE = "0000-00-00-00.00";
-
     @Override
     public void map(MapEmitter emitter, String input) {
         LOG.entering(getClass().getName(), "map");
@@ -117,24 +115,24 @@ public class TweetMapper implements MapInstruction {
                 try {
                     Date date = sourceDateFormat.parse(key);
                     key = targetDateFormat.format(date);
-                } catch (Exception e) {
-                    System.out.println(key);
-                    e.printStackTrace(System.out);
-                    key = DEFAULT_OUT_DATE;
-                }
-                String sentiment = findSentiment(nextLine[TWEET_INDEX]).toString();
 
-                if (logging) {
-                    int i = 0;
-                    for (Integer id : logIDs) {
-                        entries[i] = nextLine[id];
-                        i++;
+                    String sentiment = findSentiment(nextLine[TWEET_INDEX]).toString();
+
+                    if (logging) {
+                        int i = 0;
+                        for (Integer id : logIDs) {
+                            entries[i] = nextLine[id];
+                            i++;
+                        }
+                        entries[i] = sentiment;
+                        writer.writeNext(entries);
                     }
-                    entries[i] = sentiment;
-                    writer.writeNext(entries);
-                }
 
-                emitter.emitIntermediateMapResult(key, sentiment);
+                    emitter.emitIntermediateMapResult(key, sentiment);
+                } catch (Exception e) {
+                    System.out.println("Can not parse " + key + " skipping.");
+                    e.printStackTrace(System.out);
+                }
             }
             reader.close();
 
