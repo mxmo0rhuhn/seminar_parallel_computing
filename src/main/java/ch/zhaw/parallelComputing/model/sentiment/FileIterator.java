@@ -54,6 +54,7 @@ public class FileIterator implements Iterator<String> {
     private boolean hasNext;
     private BufferedReader reader;
 
+
     public FileIterator(Long offset, Integer keyID, Integer tweetID,
                         String sourceFormat, String targetFormat,
                         String logFileName, List<Integer> logFields) {
@@ -81,6 +82,7 @@ public class FileIterator implements Iterator<String> {
 
     public boolean setFile(String filename) {
         try {
+            hasNext = true;
             reader = new BufferedReader(new FileReader(filename));
             // read over header line
             testAndGetLine();
