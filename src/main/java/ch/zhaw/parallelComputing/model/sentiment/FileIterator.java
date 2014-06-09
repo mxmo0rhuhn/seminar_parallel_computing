@@ -25,6 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Logger;
 
 /**
@@ -160,7 +161,7 @@ public class FileIterator implements Iterator<String> {
 
     public static boolean isValidDateFormat(String st) {
         try {
-            new SimpleDateFormat(st);
+            new SimpleDateFormat(st, Locale.ENGLISH);
             return true;
         } catch (IllegalArgumentException e) {
             // invalid pattern

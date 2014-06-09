@@ -27,6 +27,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.List;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 /**
  * Dialog for all needed options to run a plotting job.
@@ -116,9 +117,9 @@ public class ComparisonDialog extends JDialog {
                     CSVHandler.getDataset(ComparisonDialog.this.dateSelector.getSelectedIndex()
                                          ,ComparisonDialog.this.valueSelector.getSelectedIndex()
                                          ,ComparisonDialog.this.comparisonFile
-                                         , new SimpleDateFormat(ComparisonDialog.this.comparisonFileFormatString)),
+                                         , new SimpleDateFormat(ComparisonDialog.this.comparisonFileFormatString, Locale.ENGLISH)),
                     CSVHandler.getDataset(ComparisonDialog.this.resultFile
-                                         ,new SimpleDateFormat(ComparisonDialog.this.resultFileFormatString)));
+                                         ,new SimpleDateFormat(ComparisonDialog.this.resultFileFormatString, Locale.ENGLISH)));
             dispose();
         } else {
             infoLabel.setText("Not a valid date format");

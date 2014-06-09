@@ -38,7 +38,7 @@ public class ConsoleObserver implements Observer {
 
     private static final Logger LOG = Logger.getLogger(ConsoleObserver.class.getName());
 
-    private final DateFormat logTsdFormat = new SimpleDateFormat("hh:mm:ss:SSS");
+    private final DateFormat logTsdFormat = new SimpleDateFormat("hh:mm:ss:SSS", Locale.getDefault());
     private final File outFile;
     private Date startTSD;
     private final GUI activeWindow;

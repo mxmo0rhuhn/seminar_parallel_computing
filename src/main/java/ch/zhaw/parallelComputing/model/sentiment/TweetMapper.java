@@ -36,6 +36,7 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -93,8 +94,8 @@ public class TweetMapper implements MapInstruction {
 
         try {
             parseProtokollFromString(input);
-            SimpleDateFormat sourceDateFormat = new SimpleDateFormat(sourceDate);
-            SimpleDateFormat targetDateFormat = new SimpleDateFormat(targetDate);
+            SimpleDateFormat sourceDateFormat = new SimpleDateFormat(sourceDate, Locale.ENGLISH);
+            SimpleDateFormat targetDateFormat = new SimpleDateFormat(targetDate, Locale.ENGLISH);
 
             CSVWriter writer = null;
             CSVReader reader = new CSVReader(new StringReader(payload));
@@ -132,6 +133,7 @@ public class TweetMapper implements MapInstruction {
                 } catch (Exception e) {
                     System.out.println("Can not parse " + key + " skipping.");
                     e.printStackTrace(System.out);
+                    throw new RuntimeException("Bad ... can not finish");
                 }
             }
             reader.close();
