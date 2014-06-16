@@ -50,6 +50,7 @@ public class GUI extends JFrame {
     private JButton selectInputButton;
     private JButton selectCompareButton;
     private JButton selectResultButton;
+    private JButton exitButton;
 
     private FileIterator iterator;
     private final ProjectLauncher launcher;
@@ -97,10 +98,11 @@ public class GUI extends JFrame {
         setSelectInputButtonListener();
         setSelectResultButtonListener();
         setSelectComparisonButtonListener();
+        setExitButtonListener();
 
         setContentPane(rootPanel);
-        setSize(new Dimension(800, 300));
-        setResizable(false);
+        setSize(new Dimension(800, 600));
+        setUndecorated(true);
         logArea.setEditable(false);
         pack();
         setLocationRelativeTo(null);
@@ -217,6 +219,24 @@ public class GUI extends JFrame {
         });
     }
 
+    private void setExitButtonListener() {
+        exitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                int confirm = 1;
+                if (comp.hasResults()) {
+                    confirm = 0;
+                } else {
+                    confirm = JOptionPane.showOptionDialog(GUI.this, "A computation is running - Are You Sure to Close Application?", "Exit Confirmation",
+                            JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+                }
+                if (confirm == 0) {
+                    launcher.exit();
+                }
+            }
+        });
+    }
+
     private String getCSVFromDialog(String title) {
         File workingDirectory = new File(System.getProperty("user.dir"));
         JFileChooser chooser = new JFileChooser(title);
@@ -257,6 +277,10 @@ public class GUI extends JFrame {
 
     public void setCurrentComparisonFileDateFormat(String currentComparisonFileDateFormat) {
         this.currentComparisonFileDateFormat = currentComparisonFileDateFormat;
+    }
+
+    private void createUIComponents() {
+        // TODO: place custom component creation code here
     }
 
     {
@@ -316,6 +340,12 @@ public class GUI extends JFrame {
         selectResultButton = new JButton();
         selectResultButton.setText("Select result file");
         panel1.add(selectResultButton, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        exitButton = new JButton();
+        exitButton.setBackground(new Color(-65485));
+        exitButton.setEnabled(true);
+        exitButton.setForeground(new Color(-16777216));
+        exitButton.setText("X");
+        panel1.add(exitButton, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_NORTHEAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, new Dimension(35, 35), new Dimension(35, 35), new Dimension(35, 35), 0, false));
         ButtonGroup buttonGroup;
         buttonGroup = new ButtonGroup();
         buttonGroup.add(evaluateRadioButton);

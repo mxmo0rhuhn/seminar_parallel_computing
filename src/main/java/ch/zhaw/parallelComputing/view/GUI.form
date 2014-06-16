@@ -96,6 +96,21 @@
               <text value="Select result file"/>
             </properties>
           </component>
+          <component id="b96d1" class="javax.swing.JButton" binding="exitButton">
+            <constraints>
+              <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="5" fill="0" indent="0" use-parent-layout="false">
+                <minimum-size width="35" height="35"/>
+                <preferred-size width="35" height="35"/>
+                <maximum-size width="35" height="35"/>
+              </grid>
+            </constraints>
+            <properties>
+              <background color="-65485"/>
+              <enabled value="true"/>
+              <foreground color="-16777216"/>
+              <text value="X"/>
+            </properties>
+          </component>
         </children>
       </grid>
     </children>
