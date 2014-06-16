@@ -5,7 +5,7 @@ Term paper for the Zurich university of applied sciences seminar in parallel com
 
 This paper aims to check for a possible correlation of sentiments and chosen values in a specified period.
 The sentiment analysis is done with the Standord Core NLP framework.
-For the parallel computation an own Java based MAP REDUCE framework is used.
+For the parallel computation an own Java based Map-Reduce framework is used.
 
 **Sample Case:**
 
