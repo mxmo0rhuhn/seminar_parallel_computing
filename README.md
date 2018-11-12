@@ -46,11 +46,11 @@ Just download and have some fun ;)
 Dependencies:
 -------------
 
-[Stanford Core NLP] (https://github.com/stanfordnlp/CoreNLP)
+[Stanford Core NLP](https://github.com/stanfordnlp/CoreNLP)
 
-[A older term paper is used for map-reduce] (https://github.com/mxmo0rhuhn/map-reduce)
+[A older term paper is used for map-reduce](https://github.com/mxmo0rhuhn/map-reduce)
 
-[JFreeChart] (https://github.com/jfree/jfreechart-fse)
+[JFreeChart](https://github.com/jfree/jfreechart-fse)
 
 License:
 -------------
